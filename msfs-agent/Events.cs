@@ -26,6 +26,7 @@ namespace MSFS
         AP_SPD_VAR_SET,                               //Sets airspeed reference in knots
         AP_VS_VAR_SET_ENGLISH,                        //Sets reference vertical speed in feet per minute
         BLEED_AIR_SOURCE_CONTROL_SET,                 //0: auto, 1: off, 2: apu, 3: engines
+        CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE,          //Seatbelt sign switch
         COM_RADIO_SET,                                //Sets COM frequency (BCD Hz)
         COM_STBY_RADIO_SET,                           //Sets COM 1 standby frequency (BCD Hz)
         COM_STBY_RADIO_SWAP,                          //Swaps COM 1 frequency with standby
@@ -77,6 +78,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.AP_SPD_VAR_SET, "AP_SPD_VAR_SET");
             _enumToNameDictionary.Add(EventTypes.AP_VS_VAR_SET_ENGLISH, "AP_VS_VAR_SET_ENGLISH");
             _enumToNameDictionary.Add(EventTypes.BLEED_AIR_SOURCE_CONTROL_SET, "BLEED_AIR_SOURCE_CONTROL_SET");
+            _enumToNameDictionary.Add(EventTypes.CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE, "CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.COM_RADIO_SET, "COM_RADIO_SET");
             _enumToNameDictionary.Add(EventTypes.COM_STBY_RADIO_SET, "COM_STBY_RADIO_SET");
             _enumToNameDictionary.Add(EventTypes.COM_STBY_RADIO_SWAP, "COM_STBY_RADIO_SWAP");
@@ -95,7 +97,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.NAV2_RADIO_SWAP, "NAV2_RADIO_SWAP");
             _enumToNameDictionary.Add(EventTypes.NAV2_STBY_SET, "NAV2_STBY_SET");
             _enumToNameDictionary.Add(EventTypes.PANEL_LIGHTS_TOGGLE, "PANEL_LIGHTS_TOGGLE");
-            _enumToNameDictionary.Add(EventTypes.PANEL_LIGHTS_TOGGLE, "PARKING_BRAKES");
+            _enumToNameDictionary.Add(EventTypes.PARKING_BRAKES, "PARKING_BRAKES");
             _enumToNameDictionary.Add(EventTypes.STROBES_TOGGLE, "STROBES_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_BEACON_LIGHTS, "TOGGLE_BEACON_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_CABIN_LIGHTS, "TOGGLE_CABIN_LIGHTS");
