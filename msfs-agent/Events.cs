@@ -18,7 +18,7 @@ namespace MSFS
         PAUSE,
 
         //Autopilot
-        TOGGLE_MASTER_BATTERY,                        //Toggle battery switch state. The battery index is the N index of the battery.N definition.
+        
         ADF_COMPLETE_SET,                             //Sets ADF 1 frequency (BCD Hz)
         ADF2_COMPLETE_SET,                            //Sets ADF 1 frequency (BCD Hz)
         AP_ALT_VAR_SET_ENGLISH,                       //Sets altitude reference in feet
@@ -50,6 +50,7 @@ namespace MSFS
         TOGGLE_BEACON_LIGHTS,                         //Toggle beacon lights
         TOGGLE_CABIN_LIGHTS,                          //Toggle cockpit/cabin lights
         TOGGLE_LOGO_LIGHTS,                           //Toggle logo lights
+        TOGGLE_MASTER_BATTERY,                        //Toggle battery switch state. The battery index is the N index of the battery.N definition.
         TOGGLE_NAV_LIGHTS,                            //Toggle navigation lights
         TOGGLE_RECOGNITION_LIGHTS,                    //Toggle recognition lights
         TOGGLE_TAXI_LIGHTS,                           //Toggle taxi lights
@@ -70,7 +71,6 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.SIMSTOP, "SIMSTOP");
             _enumToNameDictionary.Add(EventTypes.PAUSE, "PAUSE");
 
-            _enumToNameDictionary.Add(EventTypes.TOGGLE_MASTER_BATTERY, "TOGGLE_MASTER_BATTERY");
             _enumToNameDictionary.Add(EventTypes.ADF_COMPLETE_SET, "ADF_COMPLETE_SET");
             _enumToNameDictionary.Add(EventTypes.ADF2_COMPLETE_SET, "ADF2_COMPLETE_SET");
             _enumToNameDictionary.Add(EventTypes.AP_ALT_VAR_SET_ENGLISH, "AP_ALT_VAR_SET_ENGLISH");
@@ -102,6 +102,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.TOGGLE_BEACON_LIGHTS, "TOGGLE_BEACON_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_CABIN_LIGHTS, "TOGGLE_CABIN_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_LOGO_LIGHTS, "TOGGLE_LOGO_LIGHTS");
+            _enumToNameDictionary.Add(EventTypes.TOGGLE_MASTER_BATTERY, "TOGGLE_MASTER_BATTERY");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_NAV_LIGHTS, "TOGGLE_NAV_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_RECOGNITION_LIGHTS, "TOGGLE_RECOGNITION_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_TAXI_LIGHTS, "TOGGLE_TAXI_LIGHTS");

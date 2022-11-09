@@ -31,7 +31,7 @@ namespace msfs.agent.tester
                 agent.TriggerEvent(EventTypes.NAV1_RADIO_SET, "174.1");
 
                 // trigger an event without data
-                agent.TriggerEvent(EventTypes.STROBES_TOGGLE);
+                agent.TriggerEvent(EventTypes.TOGGLE_MASTER_BATTERY);
 
                 // the following will keep requesting updated data from the sim with each keypress
                 // note: the results of the request is output to the to Output window (not the console)
