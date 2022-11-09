@@ -99,11 +99,6 @@ namespace MSFS
                     GetPlaneData(vaProxy, msfsAgent);
                     break;
 
-                case "TOGGLE_MASTER_BATTERY":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.TOGGLE_MASTER_BATTERY, eventData);
-                    break;
-
                 case "ADF_COMPLETE_SET":
                     eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
                     msfsAgent.TriggerEvent(EventTypes.ADF_COMPLETE_SET, eventData);

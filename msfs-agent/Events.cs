@@ -44,6 +44,7 @@ namespace MSFS
         NAV2_RADIO_SWAP,                              //Swaps NAV 2 frequency with standby
         NAV2_STBY_SET,                                //Sets NAV 2 standby frequency (BCD Hz)
         PANEL_LIGHTS_TOGGLE,                          //Toggle panel lights
+        PARKING_BRAKES,                               //Toggle parking brake
         STROBES_TOGGLE,                               //Toggle strobe lights 
         TOGGLE_BEACON_LIGHTS,                         //Toggle beacon lights
         TOGGLE_CABIN_LIGHTS,                          //Toggle cockpit/cabin lights
@@ -94,6 +95,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.NAV2_RADIO_SWAP, "NAV2_RADIO_SWAP");
             _enumToNameDictionary.Add(EventTypes.NAV2_STBY_SET, "NAV2_STBY_SET");
             _enumToNameDictionary.Add(EventTypes.PANEL_LIGHTS_TOGGLE, "PANEL_LIGHTS_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.PANEL_LIGHTS_TOGGLE, "PARKING_BRAKES");
             _enumToNameDictionary.Add(EventTypes.STROBES_TOGGLE, "STROBES_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_BEACON_LIGHTS, "TOGGLE_BEACON_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_CABIN_LIGHTS, "TOGGLE_CABIN_LIGHTS");

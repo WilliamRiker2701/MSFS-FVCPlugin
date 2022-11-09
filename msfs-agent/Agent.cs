@@ -118,7 +118,7 @@ namespace MSFS
 
             try
             {
-                DisableMessagePolling();
+            DisableMessagePolling();
 
                 _simConnection.UnsubscribeFromSystemEvent(EventTypes.SIMSTART);
                 _simConnection.UnsubscribeFromSystemEvent(EventTypes.SIMSTOP);
