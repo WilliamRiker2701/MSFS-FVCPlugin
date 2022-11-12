@@ -15,14 +15,14 @@ namespace MSFS
         const string LOG_PREFIX = "MSFS Agent: ";
         const string LOG_NORMAL = "purple";
         const string LOG_ERROR = "red";
-        const string LOG_INFO = "grey";                        
+        const string LOG_INFO = "grey";
 
         /// <summary>
         /// Name of the plug-in as it should be shown in the UX
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS Agent - v1.0";  
+            return "MSFS Agent - v1.0";
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace MSFS
         /// <returns></returns>
         public static string VA_DisplayInfo()
         {
-            return "Enables access to Microsoft Flight Simulator game information and ability to trigger in game actions/events.";  
+            return "Enables access to Microsoft Flight Simulator game information and ability to trigger in game actions/events.";
         }
 
         /// <summary>
@@ -39,17 +39,17 @@ namespace MSFS
         /// </summary>
         public static Guid VA_Id()
         {
-            return new Guid("{13CF33A1-302E-4D94-A02F-9A95C2E2A737}");  
+            return new Guid("{13CF33A1-302E-4D94-A02F-9A95C2E2A737}");
         }
-        
+
         /// <summary>
         /// Used to stop any long running processes inside the plugin
         /// </summary>
-        public static void VA_StopCommand()  
+        public static void VA_StopCommand()
         {
             // plugin has no long running processes
         }
-        
+
         /// <summary>
         /// Runs when Voice Attack loads and processes plugins (runs once when the app launches)
         /// </summary>
@@ -252,7 +252,7 @@ namespace MSFS
 
             Agent msfsAgent = new Agent();
             msfsAgent.Connect();
-                        
+
             if (msfsAgent.Connected)
             {
                 // need to make sure data definitions are loaded otherwise we won't get structured data back from the sim
@@ -295,7 +295,7 @@ namespace MSFS
                 {
                     System.Threading.Thread.Sleep(10);
                     msfsAgent.CheckForMessage();
-                }                 
+                }
 
             }
             catch (Exception ex)
@@ -305,11 +305,12 @@ namespace MSFS
             }
 
 
-            try {                 
+            try
+            {
                 // loops through the returned data structure and converts each field into a voice attack variable
                 foreach (var field in typeof(PlaneState).GetFields())
                 {
-                    if(field.FieldType == typeof(Boolean) )
+                    if (field.FieldType == typeof(Boolean))
                         vaProxy.SetBoolean(VARIABLE_NAMESPACE + ".PlaneState." + field.Name, (bool?)field.GetValue(msfsAgent.GetPlaneState));
                     if (field.FieldType == typeof(String))
                         vaProxy.SetText(VARIABLE_NAMESPACE + ".PlaneState." + field.Name, (string)field.GetValue(msfsAgent.GetPlaneState));
@@ -331,7 +332,4 @@ namespace MSFS
 
     }
 }
-
-
-
 
