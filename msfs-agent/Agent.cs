@@ -204,7 +204,7 @@ namespace MSFS
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT HEADING LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT HEADING LOCK DIR", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT MAX BANK ID", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT MAX BANK ID", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT NAV SELECTED", "Number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT NAV1 LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT THROTTLE ARM", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -218,25 +218,25 @@ namespace MSFS
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "COM ACTIVE FREQUENCY:2", "MHz", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "COM STANDBY FREQUENCY:2", "MHz", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ELECTRICAL MASTER BATTERY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "EXTERNAL POWER CONNECTION ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "EXTERNAL POWER ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG ANTI ICE:1", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG ANTI ICE:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N1 RPM:1", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N1 RPM:2", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N2 RPM:1", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N2 RPM:2", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N1 RPM:1", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N1 RPM:2", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N2 RPM:1", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENG N2 RPM:2", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ENGINE TYPE", "Enum", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FLAPS HANDLE INDEX", "Number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FLAPS HANDLE PERCENT", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:1", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:2", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:3", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:4", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:5", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:6", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:1", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:2", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:3", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:1", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:2", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:3", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:4", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:5", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM PUMP SWITCH:6", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:1", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:2", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "FUELSYSTEM VALVE SWITCH:3", null, SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "GEAR HANDLE POSITION", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "GENERAL ENG STARTER:1", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "GENERAL ENG STARTER:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -277,6 +277,7 @@ namespace MSFS
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "TITLE", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "TRANSPONDER AVAILABLE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "TRANSPONDER CODE:1", "Hz", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "VERTICAL SPEED", "Feet/minute", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "WATER RUDDER HANDLE POSITION", "Position", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "WINDSHIELD DEICE SWITCH", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
@@ -507,7 +508,7 @@ namespace MSFS
                         Debug.WriteLine("Com2_Active_Frequency: " + GetPlaneState.Com2_Active_Frequency.ToString());
                         Debug.WriteLine("Com2_Standby_Frequency: " + GetPlaneState.Com2_Standby_Frequency.ToString());
                         Debug.WriteLine("Electrical_Master_Battery: " + GetPlaneState.Electrical_Master_Battery.ToString());
-                        Debug.WriteLine("External_Power_Connection_On: " + GetPlaneState.External_Power_Connection_On.ToString());
+                        Debug.WriteLine("External_Power_On: " + GetPlaneState.External_Power_On.ToString());
                         Debug.WriteLine("Engine_Anti_Ice:1: " + GetPlaneState.Engine_Anti_Ice_1.ToString());
                         Debug.WriteLine("Engine_Anti_Ice:2: " + GetPlaneState.Engine_Anti_Ice_2.ToString());
                         Debug.WriteLine("Engine_N1_RPM:1: " + GetPlaneState.Engine_N1_RPM_1.ToString());
@@ -566,6 +567,7 @@ namespace MSFS
                         Debug.WriteLine("Title: " + GetPlaneState.Title.ToString());
                         Debug.WriteLine("Transponder_Available: " + GetPlaneState.Transponder_Available.ToString());
                         Debug.WriteLine("Transponder_Code: " + GetPlaneState.Transponder_Code.ToString());
+                        Debug.WriteLine("Vertical_Speed: " + GetPlaneState.Vertical_Speed.ToString());
                         Debug.WriteLine("Water_Rudder_Handle_Position: " + GetPlaneState.Water_Rudder_Handle_Position.ToString());
                         Debug.WriteLine("Windshield_Deice_Switch: " + GetPlaneState.Windshield_Deice_Switch.ToString());
 

@@ -57,8 +57,7 @@ namespace MSFS
         public bool Autopilot_Heading_Lock;
         public int Autopilot_Heading_Lock_Dir;
         public bool Autopilot_Master;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Autopilot_Max_Bank_ID;
+        public int Autopilot_Max_Bank_ID;
         public double Autopilot_Nav_Selected;
         public bool Autopilot_Nav1_Lock;
         public bool Autopilot_Throttle_Arm;
@@ -72,38 +71,25 @@ namespace MSFS
         public double Com2_Active_Frequency;
         public double Com2_Standby_Frequency;
         public bool Electrical_Master_Battery;
-        public bool External_Power_Connection_On;
+        public bool External_Power_On;
         public bool Engine_Anti_Ice_1;
         public bool Engine_Anti_Ice_2;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Engine_N1_RPM_1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Engine_N1_RPM_2;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Engine_N2_RPM_1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Engine_N2_RPM_2;
+        public double Engine_N1_RPM_1;
+        public double Engine_N1_RPM_2;
+        public double Engine_N2_RPM_1;
+        public double Engine_N2_RPM_2;
         public int Engine_Type;
         public double Flaps_Handle_Index;
         public double Flaps_Handle_Percent;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_2;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_3;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_4;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_5;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Pump_Switch_6;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Valve_Switch_1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Valve_Switch_2;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Fuelsystem_Valve_Switch_3;
+        public bool Fuelsystem_Pump_Switch_1;
+        public bool Fuelsystem_Pump_Switch_2;
+        public bool Fuelsystem_Pump_Switch_3;
+        public bool Fuelsystem_Pump_Switch_4;
+        public bool Fuelsystem_Pump_Switch_5;
+        public bool Fuelsystem_Pump_Switch_6;
+        public bool Fuelsystem_Valve_Switch_1;
+        public bool Fuelsystem_Valve_Switch_2;
+        public bool Fuelsystem_Valve_Switch_3;
         public int Gear_Handle_Position;
         public bool General_Eng_Starter_1;
         public bool General_Eng_Starter_2;
@@ -144,6 +130,7 @@ namespace MSFS
         public string Title;
         public bool Transponder_Available;
         public int Transponder_Code;
+        public int Vertical_Speed;
         public int Water_Rudder_Handle_Position;
         public bool Windshield_Deice_Switch;
 

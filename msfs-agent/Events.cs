@@ -28,6 +28,8 @@ namespace MSFS
         AP_MAX_BANK_SET,
         AUTO_THROTTLE_ARM,
         AUTOPILOT_DISENGAGE_TOGGLE,
+        AUTOPILOT_ON,
+        AUTOPILOT_OFF,
 
         // Radio and Navigation
 
@@ -55,6 +57,8 @@ namespace MSFS
 
         PARKING_BRAKES,                               //Toggle parking brake
         GEAR_TOGGLE,
+        SPOILERS_ARM_SET,
+        SPOILERS_ARM_ON,
         SPOILERS_SET,
         SET_AUTOBRAKE_CONTROL,
         FLAPS_SET,
@@ -62,7 +66,7 @@ namespace MSFS
         //Electric
 
         TOGGLE_MASTER_BATTERY,                        //Toggle battery switch state. The battery index is the N index of the battery.N definition.
-        ELECTRIC_GPU_SWITCH_TOGGLE,
+        TOGGLE_EXTERNAL_POWER,
         APU_STARTER,
         APU_GENERATOR_SWITCH_TOGGLE,
         APU_OFF_SWITCH,
@@ -104,7 +108,7 @@ namespace MSFS
         ANTI_ICE_TOGGLE_ENG1,
         ANTI_ICE_TOGGLE_ENG2,
         BAROMETRIC,                                   //Set local baro
-
+        BAROMETRIC_STD_PRESSURE,                      //Set standard baro
 
 
     }
@@ -130,6 +134,8 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.AP_MAX_BANK_SET, "AP_MAX_BANK_SET");
             _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTO_THROTTLE_ARM");
             _enumToNameDictionary.Add(EventTypes.AUTOPILOT_DISENGAGE_TOGGLE, "AUTOPILOT_DISENGAGE_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTOPILOT_ON");
+            _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTOPILOT_OFF");
 
 
             _enumToNameDictionary.Add(EventTypes.ADF_COMPLETE_SET, "ADF_COMPLETE_SET");
@@ -154,12 +160,14 @@ namespace MSFS
 
             _enumToNameDictionary.Add(EventTypes.PARKING_BRAKES, "PARKING_BRAKES");
             _enumToNameDictionary.Add(EventTypes.GEAR_TOGGLE, "GEAR_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.SPOILERS_ARM_SET, "SPOILERS_ARM_SET");
+            _enumToNameDictionary.Add(EventTypes.SPOILERS_ARM_ON, "SPOILERS_ARM_ON");
             _enumToNameDictionary.Add(EventTypes.SPOILERS_SET, "SPOILERS_SET");
             _enumToNameDictionary.Add(EventTypes.SET_AUTOBRAKE_CONTROL, "SET_AUTOBRAKE_CONTROL");
             _enumToNameDictionary.Add(EventTypes.FLAPS_SET, "FLAPS_SET");
 
             _enumToNameDictionary.Add(EventTypes.TOGGLE_MASTER_BATTERY, "TOGGLE_MASTER_BATTERY");
-            _enumToNameDictionary.Add(EventTypes.ELECTRIC_GPU_SWITCH_TOGGLE, "ELECTRIC_GPU_SWITCH_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.TOGGLE_EXTERNAL_POWER, "TOGGLE_EXTERNAL_POWER");
             _enumToNameDictionary.Add(EventTypes.APU_STARTER, "APU_STARTER");
             _enumToNameDictionary.Add(EventTypes.APU_GENERATOR_SWITCH_TOGGLE, "APU_GENERATOR_SWITCH_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.APU_OFF_SWITCH, "APU_GENERATOR_SWITCH_TOGGLE");     
@@ -193,6 +201,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.ANTI_ICE_TOGGLE_ENG1, "ANTI_ICE_TOGGLE_ENG1");
             _enumToNameDictionary.Add(EventTypes.ANTI_ICE_TOGGLE_ENG2, "ANTI_ICE_TOGGLE_ENG2");
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC, "BAROMETRIC");
+            _enumToNameDictionary.Add(EventTypes.BAROMETRIC_STD_PRESSURE, "BAROMETRIC_STD_PRESSURE");
 
 
 

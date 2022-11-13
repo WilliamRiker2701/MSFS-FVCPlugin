@@ -184,6 +184,26 @@ namespace MSFS
                     msfsAgent.TriggerEvent(EventTypes.XPNDR_SET, eventData);
                     break;
 
+                case "FLAPS_SET":
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                    msfsAgent.TriggerEvent(EventTypes.FLAPS_SET, eventData);
+                    break;
+
+                case "SPOILERS_ARM_SET":
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                    msfsAgent.TriggerEvent(EventTypes.SPOILERS_ARM_SET, eventData);
+                    break;
+
+                case "AP_MAX_BANK_SET":
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                    msfsAgent.TriggerEvent(EventTypes.AP_MAX_BANK_SET, eventData);
+                    break;
+
+                case "FUELSYSTEM_PUMP_TOGGLE":
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                    msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_PUMP_TOGGLE, eventData);
+                    break;
+
                 default:
 
                     // for all other cases, pass the "context" command through to the agent as a requested event with no data
