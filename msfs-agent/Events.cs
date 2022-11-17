@@ -5,6 +5,7 @@
 // Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
 //================================================================================================================= 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace MSFS
@@ -91,6 +92,8 @@ namespace MSFS
         BLEED_AIR_SOURCE_CONTROL_SET,                 //0: auto, 1: off, 2: apu, 3: engines
         TOGGLE_STARTER1,
         TOGGLE_STARTER2,
+        TURBINE_IGNITION_SWITCH_SET1,
+        TURBINE_IGNITION_SWITCH_SET2,
 
         //Fuel System
 
@@ -109,6 +112,8 @@ namespace MSFS
         ANTI_ICE_TOGGLE_ENG2,
         BAROMETRIC,                                   //Set local baro
         BAROMETRIC_STD_PRESSURE,                      //Set standard baro
+
+        ELECTRICAL_CIRCUIT_TOGGLE,
 
 
     }
@@ -134,8 +139,8 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.AP_MAX_BANK_SET, "AP_MAX_BANK_SET");
             _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTO_THROTTLE_ARM");
             _enumToNameDictionary.Add(EventTypes.AUTOPILOT_DISENGAGE_TOGGLE, "AUTOPILOT_DISENGAGE_TOGGLE");
-            _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTOPILOT_ON");
-            _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTOPILOT_OFF");
+            _enumToNameDictionary.Add(EventTypes.AUTOPILOT_ON, "AUTOPILOT_ON");
+            _enumToNameDictionary.Add(EventTypes.AUTOPILOT_OFF, "AUTOPILOT_OFF");
 
 
             _enumToNameDictionary.Add(EventTypes.ADF_COMPLETE_SET, "ADF_COMPLETE_SET");
@@ -188,6 +193,8 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.BLEED_AIR_SOURCE_CONTROL_SET, "BLEED_AIR_SOURCE_CONTROL_SET");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_STARTER1, "TOGGLE_STARTER1");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_STARTER2, "TOGGLE_STARTER2");
+            _enumToNameDictionary.Add(EventTypes.TURBINE_IGNITION_SWITCH_SET1, "TURBINE_IGNITION_SWITCH_SET1");
+            _enumToNameDictionary.Add(EventTypes.TURBINE_IGNITION_SWITCH_SET2, "TURBINE_IGNITION_SWITCH_SET2");
 
             _enumToNameDictionary.Add(EventTypes.CROSS_FEED_TOGGLE, "CROSS_FEED_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.FUELSYSTEM_PUMP_TOGGLE, "FUELSYSTEM_PUMP_TOGGLE");
@@ -202,6 +209,8 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.ANTI_ICE_TOGGLE_ENG2, "ANTI_ICE_TOGGLE_ENG2");
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC, "BAROMETRIC");
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC_STD_PRESSURE, "BAROMETRIC_STD_PRESSURE");
+
+            _enumToNameDictionary.Add(EventTypes.ELECTRICAL_CIRCUIT_TOGGLE, "ELECTRICAL_CIRCUIT_TOGGLE");
 
 
 
