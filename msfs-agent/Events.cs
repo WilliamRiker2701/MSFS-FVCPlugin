@@ -28,6 +28,7 @@ namespace MSFS
         TOGGLE_FLIGHT_DIRECTOR,
         AP_MAX_BANK_SET,
         AUTO_THROTTLE_ARM,
+        AUTO_THROTTLE_TO_GA,
         AUTOPILOT_DISENGAGE_TOGGLE,
         AUTOPILOT_ON,
         AUTOPILOT_OFF,
@@ -58,6 +59,8 @@ namespace MSFS
 
         PARKING_BRAKES,                               //Toggle parking brake
         GEAR_TOGGLE,
+        GEAR_DOWN,
+        GEAR_UP,
         SPOILERS_ARM_SET,
         SPOILERS_ARM_ON,
         SPOILERS_SET,
@@ -138,6 +141,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.TOGGLE_FLIGHT_DIRECTOR, "TOGGLE_FLIGHT_DIRECTOR");
             _enumToNameDictionary.Add(EventTypes.AP_MAX_BANK_SET, "AP_MAX_BANK_SET");
             _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_ARM, "AUTO_THROTTLE_ARM");
+            _enumToNameDictionary.Add(EventTypes.AUTO_THROTTLE_TO_GA, "AUTO_THROTTLE_TO_GA"); 
             _enumToNameDictionary.Add(EventTypes.AUTOPILOT_DISENGAGE_TOGGLE, "AUTOPILOT_DISENGAGE_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.AUTOPILOT_ON, "AUTOPILOT_ON");
             _enumToNameDictionary.Add(EventTypes.AUTOPILOT_OFF, "AUTOPILOT_OFF");
@@ -165,6 +169,8 @@ namespace MSFS
 
             _enumToNameDictionary.Add(EventTypes.PARKING_BRAKES, "PARKING_BRAKES");
             _enumToNameDictionary.Add(EventTypes.GEAR_TOGGLE, "GEAR_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.GEAR_DOWN, "GEAR_DOWN");
+            _enumToNameDictionary.Add(EventTypes.GEAR_UP, "GEAR_UP");
             _enumToNameDictionary.Add(EventTypes.SPOILERS_ARM_SET, "SPOILERS_ARM_SET");
             _enumToNameDictionary.Add(EventTypes.SPOILERS_ARM_ON, "SPOILERS_ARM_ON");
             _enumToNameDictionary.Add(EventTypes.SPOILERS_SET, "SPOILERS_SET");
