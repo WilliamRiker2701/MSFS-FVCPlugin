@@ -1,7 +1,7 @@
 ﻿//=================================================================================================================
-// PROJECT: MSFS Agent
+// PROJECT: MSFS Agent V2
 // PURPOSE: This file defines the set of events that can be triggered in the sim through the agent
-// AUTHOR: James Clark
+// AUTHOR: James Clark and William Riker
 // Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
 //================================================================================================================= 
 using System.Collections.Generic;
@@ -105,6 +105,8 @@ namespace MSFS
         SET_FUEL_TRANSFER_AUTO,
         TOGGLE_FUEL_VALVE_ENG1,
         TOGGLE_FUEL_VALVE_ENG2,
+        FUELSYSTEM_VALVE_OPEN,
+        FUELSYSTEM_VALVE_CLOSE,
 
         //Misc
 
@@ -207,6 +209,8 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.SET_FUEL_TRANSFER_AUTO, "SET_FUEL_TRANSFER_AUTO");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_FUEL_VALVE_ENG1, "TOGGLE_FUEL_VALVE_ENG1");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_FUEL_VALVE_ENG2, "TOGGLE_FUEL_VALVE_ENG2");
+            _enumToNameDictionary.Add(EventTypes.FUELSYSTEM_VALVE_OPEN, "FUELSYSTEM_VALVE_OPEN");
+            _enumToNameDictionary.Add(EventTypes.FUELSYSTEM_VALVE_CLOSE, "FUELSYSTEM_VALVE_CLOSE");
 
             _enumToNameDictionary.Add(EventTypes.CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE, "CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.WINDSHIELD_DEICE_TOGGLE, "WINDSHIELD_DEICE_TOGGLE");

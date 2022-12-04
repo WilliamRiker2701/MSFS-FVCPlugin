@@ -1,7 +1,7 @@
 ﻿//=================================================================================================================
-// PROJECT: MSFS Agent
+// PROJECT: MSFS Agent V2
 // PURPOSE: Contains misc. helper functions
-// AUTHOR: James Clark
+// AUTHOR: James Clark and William Riker
 // Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
 //================================================================================================================= 
 using System;

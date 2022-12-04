@@ -1,7 +1,7 @@
 ﻿//=================================================================================================================
-// PROJECT: MSFS Agent
+// PROJECT: MSFS Agent V2
 // PURPOSE: This file defines the data structures used to request data from the sim.
-// AUTHOR: James Clark
+// AUTHOR: James Clark and William Riker
 // Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
 //================================================================================================================= 
 using System.Runtime.InteropServices;
@@ -133,7 +133,7 @@ namespace MSFS
         public int Vertical_Speed;
         public int Water_Rudder_Handle_Position;
         public bool Windshield_Deice_Switch;
-
+        public int Alt_Variable;
     }
 
 }

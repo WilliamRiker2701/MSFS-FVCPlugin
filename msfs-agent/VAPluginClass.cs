@@ -1,11 +1,21 @@
 ﻿//=================================================================================================================
-// PROJECT: MSFS Agent
+// PROJECT: MSFS Agent V2
 // PURPOSE: This class adds Microsoft Flight Simulator 2020 agent support for Voice Attack (https://voiceattack.com/)
-// AUTHOR: James Clark
+// AUTHOR: James Clark and William Riker
 // Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
 //================================================================================================================= 
 
 using System;
+using System.Threading;
+using System.Diagnostics;
+using WASimCommander.CLI.Enums;
+using WASimCommander.CLI.Structs;
+using WASimCommander.Client;
+using WASimCommander.Enums;
+using WASimCommander.CLI.Client;
+using WASimCommander.CLI;
+using System.Runtime.Remoting.Contexts;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MSFS
 {
@@ -22,7 +32,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS Agent - v1.0";
+            return "MSFS Agent - v2.0";
         }
 
         /// <summary>
@@ -80,6 +90,11 @@ namespace MSFS
             EventTypes requestedEvent;
             string eventData;
             Agent msfsAgent;
+            string varKind = "Regular";
+
+            
+
+
 
             if (!SupportedProfile(vaProxy)) return;
 
@@ -88,150 +103,225 @@ namespace MSFS
             else
                 context = vaProxy.Context.ToUpper();
 
-            msfsAgent = ConnectToSim(vaProxy);
-            if (msfsAgent == null) return;
-
-            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing context: " + context, LOG_INFO);
-
-            switch (context)
+            if (context.Substring(0, 2) == "L:")
             {
-                case "GETPLANESTATE":
-                    GetPlaneData(vaProxy, msfsAgent);
-                    break;
+         
+                varKind = "L";
+                
+            }
+            if (context.Substring(0, 2) == "H:")
+            {
+                
+                varKind = "H";
 
-                case "ADF_COMPLETE_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.ADF_COMPLETE_SET, eventData);
-                    break;
-
-                case "ADF2_COMPLETE_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.ADF2_COMPLETE_SET, eventData);
-                    break;
-
-                case "AP_ALT_VAR_SET_ENGLISH":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.AP_ALT_VAR_SET_ENGLISH, eventData);
-                    break;
-
-                case "AP_NAV_SELECT_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.AP_NAV_SELECT_SET, eventData);
-                    break;
-
-                case "AP_SPD_VAR_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.AP_SPD_VAR_SET, eventData);
-                    break;
-
-                case "AP_VS_VAR_SET_ENGLISH":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.AP_VS_VAR_SET_ENGLISH, eventData);
-                    break;
-
-                case "BLEED_AIR_SOURCE_CONTROL_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.BLEED_AIR_SOURCE_CONTROL_SET, eventData);
-                    break;
-
-                case "COM_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.COM_RADIO_SET, eventData);
-                    break;
-
-                case "COM_STBY_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.COM_STBY_RADIO_SET, eventData);
-                    break;
-
-                case "COM2_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.COM2_RADIO_SET, eventData);
-                    break;
-
-                case "COM2_STBY_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.COM2_STBY_RADIO_SET, eventData);
-                    break;
-
-                case "HEADING_BUG_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.HEADING_BUG_SET, eventData);
-                    break;
-
-                case "NAV1_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.NAV1_RADIO_SET, eventData);
-                    break;
-
-                case "NAV1_STBY_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.NAV1_STBY_SET, eventData);
-                    break;
-
-                case "NAV2_RADIO_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.NAV2_RADIO_SET, eventData);
-                    break;
-
-                case "NAV2_STBY_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.NAV2_STBY_SET, eventData);
-                    break;
-
-                case "XPNDR_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.XPNDR_SET, eventData);
-                    break;
-
-                case "FLAPS_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.FLAPS_SET, eventData);
-                    break;
-
-                case "SPOILERS_ARM_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.SPOILERS_ARM_SET, eventData);
-                    break;
-
-                case "AP_MAX_BANK_SET":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.AP_MAX_BANK_SET, eventData);
-                    break;
-
-                case "FUELSYSTEM_PUMP_TOGGLE":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_PUMP_TOGGLE, eventData);
-                    break;
-
-                case "ELECTRICAL_CIRCUIT_TOGGLE":
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
-                    msfsAgent.TriggerEvent(EventTypes.ELECTRICAL_CIRCUIT_TOGGLE, eventData);
-                    break;
-
-                default:
-
-                    // for all other cases, pass the "context" command through to the agent as a requested event with no data
-
-                    try
-                    {
-                        // parse the context to find a matching event in the EventTypes enum, if matched, we'll request it
-                        requestedEvent = (EventTypes)Enum.Parse(typeof(EventTypes), context, false);
-                        msfsAgent.TriggerEvent(requestedEvent);
-                    }
-                    catch
-                    {
-                        vaProxy.WriteToLog(LOG_PREFIX + "Unknown context sent to agent: " + context, LOG_ERROR);
-                        msfsAgent.Disconnect();
-                        return;
-                    }
-                    break;
             }
 
-            // if we get this far we've processed the command
-            vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+            switch (varKind)
+            {
+                case "L":
 
-            msfsAgent.Disconnect();
+                    msfsAgent = ConnectToWASM(vaProxy);
+
+                    if (msfsAgent == null) return;
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing L variable: " + context, LOG_INFO);
+
+                    context = context.Remove(0, 2);
+
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+
+                    msfsAgent.TriggerWASM(context, eventData);
+
+                    vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+
+                    msfsAgent.WASMDisconnect();
+                    
+
+
+                    break;
+
+
+                case "H":
+
+
+
+
+
+                    break;
+
+                case "Regular":
+
+                    msfsAgent = ConnectToSim(vaProxy);
+
+                    if (msfsAgent == null) return;
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing context: " + context, LOG_INFO);
+                    switch (context)
+                    {
+                        case "GETPLANESTATE":
+                            GetPlaneData(vaProxy, msfsAgent);
+                            break;
+
+                        case "ADF_COMPLETE_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.ADF_COMPLETE_SET, eventData);
+                            break;
+
+                        case "ADF2_COMPLETE_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.ADF2_COMPLETE_SET, eventData);
+                            break;
+
+                        case "AP_ALT_VAR_SET_ENGLISH":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.AP_ALT_VAR_SET_ENGLISH, eventData);
+                            break;
+
+                        case "AP_NAV_SELECT_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.AP_NAV_SELECT_SET, eventData);
+                            break;
+
+                        case "AP_SPD_VAR_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.AP_SPD_VAR_SET, eventData);
+                            break;
+
+                        case "AP_VS_VAR_SET_ENGLISH":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.AP_VS_VAR_SET_ENGLISH, eventData);
+                            break;
+
+                        case "BLEED_AIR_SOURCE_CONTROL_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.BLEED_AIR_SOURCE_CONTROL_SET, eventData);
+                            break;
+
+                        case "COM_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.COM_RADIO_SET, eventData);
+                            break;
+
+                        case "COM_STBY_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.COM_STBY_RADIO_SET, eventData);
+                            break;
+
+                        case "COM2_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.COM2_RADIO_SET, eventData);
+                            break;
+
+                        case "COM2_STBY_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.COM2_STBY_RADIO_SET, eventData);
+                            break;
+
+                        case "HEADING_BUG_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.HEADING_BUG_SET, eventData);
+                            break;
+
+                        case "NAV1_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.NAV1_RADIO_SET, eventData);
+                            break;
+
+                        case "NAV1_STBY_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.NAV1_STBY_SET, eventData);
+                            break;
+
+                        case "NAV2_RADIO_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.NAV2_RADIO_SET, eventData);
+                            break;
+
+                        case "NAV2_STBY_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.NAV2_STBY_SET, eventData);
+                            break;
+
+                        case "XPNDR_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.XPNDR_SET, eventData);
+                            break;
+
+                        case "FLAPS_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.FLAPS_SET, eventData);
+                            break;
+
+                        case "SPOILERS_ARM_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.SPOILERS_ARM_SET, eventData);
+                            break;
+
+                        case "AP_MAX_BANK_SET":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.AP_MAX_BANK_SET, eventData);
+                            break;
+
+                        case "FUELSYSTEM_PUMP_TOGGLE":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_PUMP_TOGGLE, eventData);
+                            break;
+
+                        case "ELECTRICAL_CIRCUIT_TOGGLE":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.ELECTRICAL_CIRCUIT_TOGGLE, eventData);
+                            break;
+
+                        case "TURBINE_IGNITION_SWITCH_SET1":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.TURBINE_IGNITION_SWITCH_SET1, eventData);
+                            break;
+
+                        case "TURBINE_IGNITION_SWITCH_SET2":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.TURBINE_IGNITION_SWITCH_SET2, eventData);
+                            break;
+
+                        case "FUELSYSTEM_VALVE_OPEN":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_VALVE_OPEN, eventData);
+                            break;
+
+                        case "FUELSYSTEM_VALVE_CLOSE":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_VALVE_CLOSE, eventData);
+                            break;
+
+
+                        default:
+
+                            // for all other cases, pass the "context" command through to the agent as a requested event with no data
+
+                            try
+                            {
+                                // parse the context to find a matching event in the EventTypes enum, if matched, we'll request it
+                                requestedEvent = (EventTypes)Enum.Parse(typeof(EventTypes), context, false);
+                                msfsAgent.TriggerEvent(requestedEvent);
+                            }
+                            catch
+                            {
+                                vaProxy.WriteToLog(LOG_PREFIX + "Unknown context sent to agent: " + context, LOG_ERROR);
+                                msfsAgent.Disconnect();
+                                return;
+                            }
+                            break;
+
+                    }
+                    // if we get this far we've processed the command
+
+                    vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+
+                    msfsAgent.Disconnect();
+
+                    
+                    break;
+
+            }
 
         }
 
@@ -283,15 +373,40 @@ namespace MSFS
                 // need to make sure data definitions are loaded otherwise we won't get structured data back from the sim
                 msfsAgent.AddDataDefinitions();
 
-                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to sim.", LOG_INFO);
+                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to SimConnect.", LOG_INFO);
                 return msfsAgent;
             }
             else
             {
                 if (msfsAgent != null) msfsAgent.Disconnect();
-                vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to the sim.", LOG_ERROR);
+                vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to SimConnect.", LOG_ERROR);
                 return null;
             }
+            
+                
+
+        }
+
+
+        private static Agent ConnectToWASM(dynamic vaProxy)
+        {
+                      
+            Agent msfsAgent = new Agent();
+            msfsAgent.WASMConnect();
+
+            if (msfsAgent.WAServerConnected)
+            {
+
+                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to WASM.", LOG_INFO);
+                return msfsAgent;
+            }
+            else
+            {
+                if (msfsAgent != null) msfsAgent.WASMDisconnect();
+                vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to SimConnect.", LOG_ERROR);
+                return null;
+            }
+
 
         }
 

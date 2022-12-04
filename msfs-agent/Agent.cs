@@ -9,6 +9,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using Microsoft.FlightSimulator.SimConnect;
+using WASimCommander.CLI.Enums;
+using WASimCommander.CLI.Structs;
+using WASimCommander.Client;
+using WASimCommander.Enums;
+using WASimCommander.CLI.Client;
+using System.Runtime.Remoting.Contexts;
 
 namespace MSFS
 {
@@ -16,8 +22,12 @@ namespace MSFS
     public class Agent
     {
         Microsoft.FlightSimulator.SimConnect.SimConnect _simConnection;
+        WASimCommander.CLI.Client.WASimClient _waSimConnection;
+        
         const int WM_USER_SIMCONNECT = 0x402;
-        bool _connected = false;        
+        bool _connected = false;
+        bool _wasmconnected = false;
+
 
         Dictionary<RequestTypes, bool> requestPending = new Dictionary<RequestTypes, bool>();
         PlaneState _planeState = new PlaneState();
@@ -26,7 +36,7 @@ namespace MSFS
         EventWaitHandle _simConnectEventHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         Thread _simConnectReceiveThread = null;
 
-        /// <summary>
+                /// <summary>
         /// Returns the last known state of the plane
         /// </summary>
         public PlaneState GetPlaneState
@@ -50,6 +60,7 @@ namespace MSFS
         /// Indicates if there is a connection to the sim
         /// </summary>
         public bool Connected
+
         {
             get => _connected;
             private set
@@ -60,6 +71,21 @@ namespace MSFS
                 }
             }
         }
+
+        public bool WAServerConnected
+
+        {
+            get => _wasmconnected;
+            private set
+            {
+                if (_wasmconnected != value)
+                {
+                    _wasmconnected = value;
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Initiates a connection the sim and initializes the agent
@@ -79,14 +105,40 @@ namespace MSFS
                 {
                     Debug.WriteLine("Unable to connect to sim. Msg:" + ex.Message);
                 }
+            }         
+               
+        }
+
+
+        public void WASMConnect()
+        {
+
+            if (_waSimConnection == null)
+            {
+                try
+                {
+                    _waSimConnection = new WASimCommander.CLI.Client.WASimClient(0xC57E57E9);
+                    initWASMHandlers();
+                    _waSimConnection.connectServer();
+                    WAServerConnected = true;
+                    
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                }
             }
 
+      
+
         }
-        
-        /// <summary>
-        /// Starts a background thread to periodically check for messages back from the sim
-        /// </summary>
-        public void EnableMessagePolling()
+
+
+
+            /// <summary>
+            /// Starts a background thread to periodically check for messages back from the sim
+            /// </summary>
+            public void EnableMessagePolling()
         {
             _simConnectReceiveThread = new Thread(new ThreadStart(SimConnect_MessageReceiveThreadHandler));
             _simConnectReceiveThread.IsBackground = true;
@@ -138,14 +190,41 @@ namespace MSFS
                 _simConnection = null;
                 _simConnectReceiveThread = null;
                 Connected = false;
-            }
+            }                       
         }
 
+        public void WASMDisconnect()
+        {
 
-        /// <summary>
-        /// Initializes all the events we want to be able to use with the sim.
-        /// The events are automatically extracted from the "EventTypes" enum.
-        /// </summary>
+            if (!WAServerConnected) return;
+
+            try
+            {
+
+                _waSimConnection.disconnectServer();
+                _waSimConnection.disconnectSimulator();
+                // delete the client
+                _waSimConnection.Dispose();
+
+                Debug.WriteLine("Connection to WASM closed");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to Disconnect WASM. Msg:" + ex.Message);
+            }
+            finally
+            {
+
+                _waSimConnection = null;
+                WAServerConnected = false;
+            }
+
+        }
+
+            /// <summary>
+            /// Initializes all the events we want to be able to use with the sim.
+            /// The events are automatically extracted from the "EventTypes" enum.
+            /// </summary>
         private void initEvents()
         {   
             
@@ -386,6 +465,50 @@ namespace MSFS
 
         }
 
+
+        public void TriggerWASM(string varName, string varData = "0")
+        {
+            double dData;
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            try
+            {
+                
+                dData = Convert.ToDouble(varData);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to trigger WASM method. Data:{0}, Msg: {1}.", varData, ex.Message);
+                return;
+            }
+
+            
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            //------CALCULATOR CODE--------------------------------------------------------------
+            
+            string calcCode = dData + " (>L:" + varName + ")";
+
+            
+
+            _waSimConnection.executeCalculatorCode(calcCode,0, out double fResult, out string sResult);
+
+            Debug.WriteLine($"Calculator code '{calcCode}' returned: {fResult} and '{sResult}'", "<<");
+
+            //----------------------------------------------------------------------------------
+
+            //_waSimConnection.setVariable(new VariableRequest(varName), dData);
+
+            //_waSimConnection.setLocalVariable(varName, dData);
+
+            Debug.WriteLine("setLocalVariable() variable sent...");
+
+
+        }
+
         #endregion
 
 
@@ -416,7 +539,20 @@ namespace MSFS
                 Debug.WriteLine("Failed to initiate event handlers. Msg:" + ex.Message);
             }
         }
-        
+
+        private void initWASMHandlers()
+        {
+
+            _waSimConnection.OnClientEvent += ClientStatusHandler;
+            _waSimConnection.OnLogRecordReceived += LogHandler;
+            _waSimConnection.OnDataReceived += DataSubscriptionHandler;
+            _waSimConnection.setLogLevel(LogLevel.Trace, LogFacility.File, LogSource.Client);
+            _waSimConnection.setLogLevel(LogLevel.Trace, LogFacility.Remote, LogSource.Client);
+            _waSimConnection.setLogLevel(LogLevel.Trace, LogFacility.File, LogSource.Server);
+            _waSimConnection.setLogLevel(LogLevel.Trace, LogFacility.Remote, LogSource.Server);
+
+        }
+
         /// <summary>
         /// Catches any exceptions that are encountered by SimConnect
         /// </summary>
@@ -642,7 +778,40 @@ namespace MSFS
             _simConnection.ReceiveMessage();
             Debug.WriteLine("Checked for messages (manually)");
         }
+
+        static void ClientStatusHandler(ClientEvent ev)
+        {
+            Debug.WriteLine($"Client event {ev.eventType} - \"{ev.message}\"; Client status: {ev.status}", "^^");
+        }
+
+        static void LogHandler(LogRecord lr, LogSource src)
+        {
+            Debug.WriteLine($"{src} Log: {lr}", "@@");  // LogRecord has a convenience ToString() override
+        }
         #endregion
+
+
+        private enum Requests : uint
+        {
+            REQUEST_ID_1_FLOAT,
+            REQUEST_ID_2_STR
+        }
+
+        static void DataSubscriptionHandler(DataRequestRecord dr)
+        {
+            Console.Write($"<< Got Data for request {(Requests)dr.requestId} \"{dr.nameOrCode}\" with Value: ");
+            // Convert the received data into a value using DataRequestRecord's tryConvert() methods.
+            // This could be more efficient in a "real" application, but it's good enough for our tests with only 2 value types.
+            if (dr.tryConvert(out float fVal))
+                Console.WriteLine($"(float) {fVal}");
+            else if (dr.tryConvert(out string sVal))
+            {
+                Console.WriteLine($"(string) \"{sVal}\"");
+            }
+            else
+                Console.WriteLine("Could not convert result data to value!");
+            
+        }
 
     }
 }
