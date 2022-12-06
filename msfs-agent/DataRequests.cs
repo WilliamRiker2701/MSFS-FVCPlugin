@@ -37,6 +37,7 @@ namespace MSFS
         public int Ambient_Temperature;
         public bool Apu_Switch;
         public bool Apu_Generator_Switch;
+        public double Apu_Pct_Rpm;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         public string Atc_Airline;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
@@ -133,7 +134,7 @@ namespace MSFS
         public int Vertical_Speed;
         public int Water_Rudder_Handle_Position;
         public bool Windshield_Deice_Switch;
-        public int Alt_Variable;
+        public double Alt_Variable;
     }
 
 }

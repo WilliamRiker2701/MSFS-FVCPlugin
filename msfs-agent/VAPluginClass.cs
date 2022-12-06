@@ -91,10 +91,7 @@ namespace MSFS
             string eventData;
             Agent msfsAgent;
             string varKind = "Regular";
-
-            
-
-
+            string varAction = "Set";
 
             if (!SupportedProfile(vaProxy)) return;
 
@@ -105,13 +102,19 @@ namespace MSFS
 
             if (context.Substring(0, 2) == "L:")
             {
-         
+
                 varKind = "L";
-                
+
+                if (context.Substring(context.Length - 2) == "-G")
+                {
+
+                    varAction = "Get";
+
+                }
             }
             if (context.Substring(0, 2) == "H:")
             {
-                
+
                 varKind = "H";
 
             }
@@ -120,32 +123,61 @@ namespace MSFS
             {
                 case "L":
 
-                    msfsAgent = ConnectToWASM(vaProxy);
+                    switch (varAction)
+                    {
+                        case "Set":
 
-                    if (msfsAgent == null) return;
+                            msfsAgent = ConnectToWASM(vaProxy);
 
-                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing L variable: " + context, LOG_INFO);
+                            if (msfsAgent == null) return;
 
-                    context = context.Remove(0, 2);
+                            context = context.Remove(0, 2);
 
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing L variable: " + context, LOG_INFO);
 
-                    msfsAgent.TriggerWASM(context, eventData);
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
 
-                    vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+                            msfsAgent.TriggerWASM(context, eventData);
 
-                    msfsAgent.WASMDisconnect();
-                    
+                            vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
 
+                            msfsAgent.WASMDisconnect();
+
+                            break;
+
+                        case "Get":
+
+                            double varResult;
+
+                            msfsAgent = ConnectToWASM(vaProxy);
+
+                            if (msfsAgent == null) return;
+
+                            context = context.Remove(0, 2);
+
+                            context = context.Remove(context.Length - 2);
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing L variable data request: " + context, LOG_INFO);
+                                                     
+                            varResult = msfsAgent.TriggerWASM(context);
+
+                            vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".PlaneState.Alt_Variable", (decimal?)(double?)varResult);
+
+                            string calcCode = "(L:" + context + ")";
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Calculator code " + calcCode + " returned: " + varResult, LOG_INFO);
+
+                            vaProxy.WriteToLog(LOG_PREFIX + "Variable status: " + varResult, LOG_NORMAL);
+
+                            msfsAgent.WASMDisconnect();
+
+                            break;
+
+                    }
 
                     break;
 
-
                 case "H":
-
-
-
-
 
                     break;
 
@@ -318,7 +350,7 @@ namespace MSFS
 
                     msfsAgent.Disconnect();
 
-                    
+
                     break;
 
             }
@@ -382,15 +414,15 @@ namespace MSFS
                 vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to SimConnect.", LOG_ERROR);
                 return null;
             }
-            
-                
+
+
 
         }
 
 
         private static Agent ConnectToWASM(dynamic vaProxy)
         {
-                      
+
             Agent msfsAgent = new Agent();
             msfsAgent.WASMConnect();
 
@@ -472,4 +504,5 @@ namespace MSFS
 
     }
 }
+
 

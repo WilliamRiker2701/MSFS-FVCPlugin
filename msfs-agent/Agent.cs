@@ -23,7 +23,7 @@ namespace MSFS
     {
         Microsoft.FlightSimulator.SimConnect.SimConnect _simConnection;
         WASimCommander.CLI.Client.WASimClient _waSimConnection;
-        
+
         const int WM_USER_SIMCONNECT = 0x402;
         bool _connected = false;
         bool _wasmconnected = false;
@@ -36,7 +36,7 @@ namespace MSFS
         EventWaitHandle _simConnectEventHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         Thread _simConnectReceiveThread = null;
 
-                /// <summary>
+        /// <summary>
         /// Returns the last known state of the plane
         /// </summary>
         public PlaneState GetPlaneState
@@ -44,7 +44,7 @@ namespace MSFS
             get => _planeState;
             private set
             {
-                _planeState = value;                
+                _planeState = value;
             }
         }
 
@@ -67,7 +67,7 @@ namespace MSFS
             {
                 if (_connected != value)
                 {
-                    _connected = value;                    
+                    _connected = value;
                 }
             }
         }
@@ -105,8 +105,8 @@ namespace MSFS
                 {
                     Debug.WriteLine("Unable to connect to sim. Msg:" + ex.Message);
                 }
-            }         
-               
+            }
+
         }
 
 
@@ -121,7 +121,7 @@ namespace MSFS
                     initWASMHandlers();
                     _waSimConnection.connectServer();
                     WAServerConnected = true;
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -129,16 +129,16 @@ namespace MSFS
                 }
             }
 
-      
+
 
         }
 
 
 
-            /// <summary>
-            /// Starts a background thread to periodically check for messages back from the sim
-            /// </summary>
-            public void EnableMessagePolling()
+        /// <summary>
+        /// Starts a background thread to periodically check for messages back from the sim
+        /// </summary>
+        public void EnableMessagePolling()
         {
             _simConnectReceiveThread = new Thread(new ThreadStart(SimConnect_MessageReceiveThreadHandler));
             _simConnectReceiveThread.IsBackground = true;
@@ -170,13 +170,13 @@ namespace MSFS
 
             try
             {
-            DisableMessagePolling();
+                DisableMessagePolling();
 
                 _simConnection.UnsubscribeFromSystemEvent(EventTypes.SIMSTART);
                 _simConnection.UnsubscribeFromSystemEvent(EventTypes.SIMSTOP);
                 _simConnection.UnsubscribeFromSystemEvent(EventTypes.PAUSE);
 
-                _simConnection.Dispose();                
+                _simConnection.Dispose();
 
                 Debug.WriteLine("Connection to sim closed");
             }
@@ -190,7 +190,7 @@ namespace MSFS
                 _simConnection = null;
                 _simConnectReceiveThread = null;
                 Connected = false;
-            }                       
+            }
         }
 
         public void WASMDisconnect()
@@ -221,13 +221,13 @@ namespace MSFS
 
         }
 
-            /// <summary>
-            /// Initializes all the events we want to be able to use with the sim.
-            /// The events are automatically extracted from the "EventTypes" enum.
-            /// </summary>
+        /// <summary>
+        /// Initializes all the events we want to be able to use with the sim.
+        /// The events are automatically extracted from the "EventTypes" enum.
+        /// </summary>
         private void initEvents()
-        {   
-            
+        {
+
             // maps an event for each entry found in the EventTypes enum
             foreach (EventTypes item in Enum.GetValues(typeof(EventTypes)))
             {
@@ -247,7 +247,7 @@ namespace MSFS
         /// <param name="duration"></param>
         public void SetText(string text, int duration = 3)
         {
-            
+
             //colors don't seem to be supported in msfs
             _simConnection.Text(SIMCONNECT_TEXT_TYPE.PRINT_WHITE, duration, null, text);
         }
@@ -266,6 +266,7 @@ namespace MSFS
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AMBIENT TEMPERATURE", "Fahrenheit", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "APU SWITCH", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "APU GENERATOR SWITCH", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "APU PCT RPM", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ATC AIRLINE", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ATC FLIGHT NUMBER", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "ATC ID", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -380,7 +381,7 @@ namespace MSFS
         public void RequestData(RequestTypes requestType, DataDefinitions dataDefinition)
         {
             try
-            {                                             
+            {
                 _simConnection.RequestDataOnSimObjectType(requestType, dataDefinition, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
 
                 requestPending[requestType] = true;
@@ -401,7 +402,7 @@ namespace MSFS
         /// <param name="data">(Optional) data to pass with the event</param>
         public void TriggerEvent(EventTypes eventType, string data = "0")
         {
-            
+
             // final data we will send to the sim with the event
             UInt32 eventData;
             Decimal d;
@@ -430,13 +431,13 @@ namespace MSFS
                             eventData = Utils.Dec2Bcd(Decimal.ToUInt32(d * 100));
                         else
                             return;
-                        
+
                         break;
 
                     case EventTypes.XPNDR_SET:
 
                         // frequency is expect to be in NON-decimal form (i.e. 1000)
-                        if (Decimal.TryParse(data, out d))                      
+                        if (Decimal.TryParse(data, out d))
                             eventData = Utils.Dec2Bcd(Decimal.ToUInt32(d));
                         else
                             return;
@@ -460,7 +461,7 @@ namespace MSFS
             }
 
             _simConnection.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventType, eventData, NOTIFICATION_GROUPS.DEFAULT, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-            
+
             Debug.WriteLine("Event sent...");
 
         }
@@ -474,7 +475,7 @@ namespace MSFS
 
             try
             {
-                
+
                 dData = Convert.ToDouble(varData);
 
             }
@@ -484,17 +485,17 @@ namespace MSFS
                 return;
             }
 
-            
+
 
             if (String.IsNullOrWhiteSpace(varData)) varData = "0";
 
             //------CALCULATOR CODE--------------------------------------------------------------
-            
+
             string calcCode = dData + " (>L:" + varName + ")";
 
-            
 
-            _waSimConnection.executeCalculatorCode(calcCode,0, out double fResult, out string sResult);
+
+            _waSimConnection.executeCalculatorCode(calcCode, 0, out double fResult, out string sResult);
 
             Debug.WriteLine($"Calculator code '{calcCode}' returned: {fResult} and '{sResult}'", "<<");
 
@@ -509,6 +510,24 @@ namespace MSFS
 
         }
 
+        public double TriggerWASM(string varName)
+        {
+
+            
+            //------CALCULATOR CODE--------------------------------------------------------------
+            
+
+            string calcCode = "(L:" + varName + ")";
+
+            _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
+
+
+            //-----------------------------------------------------------------------------------
+
+            return fResult;
+
+        }
+
         #endregion
 
 
@@ -520,14 +539,14 @@ namespace MSFS
         private void initEventHandlers()
         {
             try
-            {                
+            {
                 _simConnection.OnRecvOpen += new SimConnect.RecvOpenEventHandler(simconnect_OnRecvOpen);
                 _simConnection.OnRecvQuit += new SimConnect.RecvQuitEventHandler(simconnect_OnRecvQuit);
                 _simConnection.OnRecvException += new SimConnect.RecvExceptionEventHandler(simconnect_OnRecvException);
                 _simConnection.OnRecvEvent += new SimConnect.RecvEventEventHandler(simconnect_OnRecvEvent);
                 _simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
-                
-                _simConnection.SubscribeToSystemEvent(EventTypes.SIMSTART, "SimStart");                
+
+                _simConnection.SubscribeToSystemEvent(EventTypes.SIMSTART, "SimStart");
                 _simConnection.SubscribeToSystemEvent(EventTypes.SIMSTOP, "SimStop");
 
                 // I can't recall why this is needed
@@ -567,10 +586,10 @@ namespace MSFS
 
             // Info on the "data" returned with the exception:
             // - dwException enum type of SIMCONNECT_EXCEPTION
-		    // - "UNKNOWN_SENDID" not sure
-		    // - dwSendID  # see SimConnect_GetLastSentPacketID
-		    // - "UNKNOWN_INDEX" not sure
-		    // - dwIndex # index of parameter that was source of error
+            // - "UNKNOWN_SENDID" not sure
+            // - dwSendID  # see SimConnect_GetLastSentPacketID
+            // - "UNKNOWN_INDEX" not sure
+            // - dwIndex # index of parameter that was source of error
         }
 
         /// <summary>
@@ -613,6 +632,7 @@ namespace MSFS
                         Debug.WriteLine("Ambient_Temperature: " + GetPlaneState.Ambient_Temperature.ToString());
                         Debug.WriteLine("Apu_Switch: " + GetPlaneState.Apu_Switch.ToString());
                         Debug.WriteLine("Apu_Generator_Switch: " + GetPlaneState.Apu_Generator_Switch.ToString());
+                        Debug.WriteLine("Apu_Pct_Rpm: " + GetPlaneState.Apu_Pct_Rpm.ToString());
                         Debug.WriteLine("Atc_Airline: " + GetPlaneState.Atc_Airline.ToString());
                         Debug.WriteLine("Atc_Flight_Number: " + GetPlaneState.Atc_Flight_Number.ToString());
                         Debug.WriteLine("Atc_Id: " + GetPlaneState.Atc_Id.ToString());
@@ -714,7 +734,7 @@ namespace MSFS
                 default:
                     break;
 
-            }         
+            }
         }
 
         /// <summary>
@@ -810,7 +830,7 @@ namespace MSFS
             }
             else
                 Console.WriteLine("Could not convert result data to value!");
-            
+
         }
 
     }
