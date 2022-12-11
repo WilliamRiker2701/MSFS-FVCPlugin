@@ -14,6 +14,11 @@ namespace MSFS
         DEFAULT
     }
 
+    public enum hSimconnect : int
+    {
+        group1
+    }
+
     // Identifies the types of data requests we want to make
     public enum RequestTypes
     {
@@ -67,6 +72,12 @@ namespace MSFS
         public bool Autopilot_Yaw_Damper;
         public int Bleed_Air_Source_Control;
         public bool Brake_Parking_Indicator;
+        public bool Circuit_Switch_On_17;
+        public bool Circuit_Switch_On_18;
+        public bool Circuit_Switch_On_19;
+        public bool Circuit_Switch_On_20;
+        public bool Circuit_Switch_On_21;
+        public bool Circuit_Switch_On_22;
         public double Com1_Active_Frequency;
         public double Com1_Standby_Frequency;
         public double Com2_Active_Frequency;

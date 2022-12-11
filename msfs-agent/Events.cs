@@ -81,6 +81,8 @@ namespace MSFS
 
         PANEL_LIGHTS_TOGGLE,                          //Toggle panel lights
         STROBES_TOGGLE,                               //Toggle strobe lights 
+        STROBES_ON,
+        STROBES_OFF,
         TOGGLE_BEACON_LIGHTS,                         //Toggle beacon lights
         TOGGLE_CABIN_LIGHTS,                          //Toggle cockpit/cabin lights
         TOGGLE_LOGO_LIGHTS,                           //Toggle logo lights
@@ -120,6 +122,7 @@ namespace MSFS
 
         ELECTRICAL_CIRCUIT_TOGGLE,
 
+        PMDG_EVENT,
 
     }
 
@@ -189,6 +192,8 @@ namespace MSFS
 
             _enumToNameDictionary.Add(EventTypes.PANEL_LIGHTS_TOGGLE, "PANEL_LIGHTS_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.STROBES_TOGGLE, "STROBES_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.STROBES_ON, "STROBES_ON");
+            _enumToNameDictionary.Add(EventTypes.STROBES_OFF, "STROBES_OFF");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_BEACON_LIGHTS, "TOGGLE_BEACON_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_CABIN_LIGHTS, "TOGGLE_CABIN_LIGHTS");
             _enumToNameDictionary.Add(EventTypes.TOGGLE_LOGO_LIGHTS, "TOGGLE_LOGO_LIGHTS");
@@ -221,6 +226,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC_STD_PRESSURE, "BAROMETRIC_STD_PRESSURE");
 
             _enumToNameDictionary.Add(EventTypes.ELECTRICAL_CIRCUIT_TOGGLE, "ELECTRICAL_CIRCUIT_TOGGLE");
+            _enumToNameDictionary.Add(EventTypes.PMDG_EVENT, "PMDG_EVENT");
 
 
 

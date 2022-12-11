@@ -9,12 +9,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using Microsoft.FlightSimulator.SimConnect;
+using FSUIPC;
 using WASimCommander.CLI.Enums;
 using WASimCommander.CLI.Structs;
 using WASimCommander.Client;
 using WASimCommander.Enums;
 using WASimCommander.CLI.Client;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography.X509Certificates;
+
 
 namespace MSFS
 {
@@ -293,6 +296,12 @@ namespace MSFS
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "AUTOPILOT YAW DAMPER", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "BLEED AIR SOURCE CONTROL", "Enum", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "BRAKE PARKING INDICATOR", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:17", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:18", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:19", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:20", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:21", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "CIRCUIT SWITCH ON:22", "Bool", SIMCONNECT_DATATYPE.INT32, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "COM ACTIVE FREQUENCY:1", "MHz", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "COM STANDBY FREQUENCY:1", "MHz", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnection.AddToDataDefinition(DataDefinitions.PlaneState, "COM ACTIVE FREQUENCY:2", "MHz", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -466,7 +475,11 @@ namespace MSFS
 
         }
 
-
+        /// <summary>
+        /// Set variable through WASM
+        /// </summary>
+        /// <param name="varName"></param>
+        /// <param name="varData"></param>
         public void TriggerWASM(string varName, string varData = "0")
         {
             double dData;
@@ -510,6 +523,11 @@ namespace MSFS
 
         }
 
+        /// <summary>
+        /// Read variable through WASM
+        /// </summary>
+        /// <param name="varName"></param>
+        /// <returns></returns>
         public double TriggerWASM(string varName)
         {
 
@@ -528,15 +546,48 @@ namespace MSFS
 
         }
 
-        #endregion
+       /// <summary>
+       /// Send PMDG 737 variable through FSUIPC
+       /// </summary>
+       /// <param name="varName"></param>
+       /// <param name="varData"></param>
+        public void TriggerPMDG(string varName, string varData = "0")
+        {
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            try
+            {
+                
+                int ivarData = int.Parse(varData);
+
+                FSUIPCConnection.Open();
+
+                var val = (int)Enum.Parse(typeof(PMDG_737_NGX_Control), varName);
+
+                FSUIPCConnection.SendControlToFS(val, ivarData);
+
+                FSUIPCConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to send event data. Data:{0}, Msg: {1}.", varData, ex.Message);
+                return;
+            }
+
+                        
+        }
 
 
-        #region Event Handlers
+#endregion
 
-        /// <summary>
-        /// Initializes all the event handles for the agent
-        /// </summary>
-        private void initEventHandlers()
+
+#region Event Handlers
+
+/// <summary>
+/// Initializes all the event handles for the agent
+/// </summary>
+private void initEventHandlers()
         {
             try
             {
@@ -659,6 +710,12 @@ namespace MSFS
                         Debug.WriteLine("Autopilot_Yaw_Damper: " + GetPlaneState.Autopilot_Yaw_Damper.ToString());
                         Debug.WriteLine("Bleed_Air_Source_Control: " + GetPlaneState.Bleed_Air_Source_Control.ToString());
                         Debug.WriteLine("Brake_Parking_Indicator: " + GetPlaneState.Brake_Parking_Indicator.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_17: " + GetPlaneState.Circuit_Switch_On_17.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_18: " + GetPlaneState.Circuit_Switch_On_18.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_19: " + GetPlaneState.Circuit_Switch_On_19.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_20: " + GetPlaneState.Circuit_Switch_On_20.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_21: " + GetPlaneState.Circuit_Switch_On_21.ToString());
+                        Debug.WriteLine("Circuit_Switch_On_22: " + GetPlaneState.Circuit_Switch_On_22.ToString());
                         Debug.WriteLine("Com1_Active_Frequency: " + GetPlaneState.Com1_Active_Frequency.ToString());
                         Debug.WriteLine("Com1_Standby_Frequency: " + GetPlaneState.Com1_Standby_Frequency.ToString());
                         Debug.WriteLine("Com2_Active_Frequency: " + GetPlaneState.Com2_Active_Frequency.ToString());

@@ -97,9 +97,7 @@ namespace MSFS
 
             if (String.IsNullOrEmpty(vaProxy.Context))
                 return;
-            else
-                context = vaProxy.Context.ToUpper();
-
+            context = vaProxy.Context;
             if (context.Substring(0, 2) == "L:")
             {
 
@@ -112,10 +110,10 @@ namespace MSFS
 
                 }
             }
-            if (context.Substring(0, 2) == "H:")
+            if (context.Substring(0, 2) == "P:")
             {
 
-                varKind = "H";
+                varKind = "PMDG";
 
             }
 
@@ -177,11 +175,29 @@ namespace MSFS
 
                     break;
 
-                case "H":
+                case "PMDG":
+
+                    msfsAgent = ConnectToSim(vaProxy);
+
+                    if (msfsAgent == null) return;
+
+                    context = context.Remove(0, 2);
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing PMDG variable: " + context, LOG_INFO);
+
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+
+                    msfsAgent.TriggerPMDG(context, eventData);
+
+                    vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+
+                    msfsAgent.Disconnect();
 
                     break;
 
                 case "Regular":
+
+                    context = context.ToUpper();
 
                     msfsAgent = ConnectToSim(vaProxy);
 
