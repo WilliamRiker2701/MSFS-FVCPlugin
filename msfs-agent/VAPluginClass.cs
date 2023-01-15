@@ -90,7 +90,7 @@ namespace MSFS
             EventTypes requestedEvent;
             string eventData;
             Agent msfsAgent;
-            string varKind = "Regular";
+            string varKind = "K";
             string varAction = "Set";
 
             if (!SupportedProfile(vaProxy)) return;
@@ -115,8 +115,22 @@ namespace MSFS
 
                 varKind = "PMDG";
 
-            }
+                if (context.Substring(context.Length - 2) == "-G")
+                {
 
+                    varAction = "Get";
+
+                }
+
+            }
+            
+            if (context.Substring(0, 2) == "A:")
+            {
+
+                varKind = "A";
+                                
+            }
+            
             switch (varKind)
             {
                 case "L":
@@ -177,39 +191,70 @@ namespace MSFS
 
                 case "PMDG":
 
-                    msfsAgent = ConnectToSim(vaProxy);
+                    switch (varAction)
+                    {
+                        case "Set":
 
-                    if (msfsAgent == null) return;
+                            msfsAgent = ConnectToSim(vaProxy);
 
-                    context = context.Remove(0, 2);
+                            if (msfsAgent == null) return;
 
-                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing PMDG variable: " + context, LOG_INFO);
+                            context = context.Remove(0, 2);
 
-                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing PMDG variable: " + context, LOG_INFO);
 
-                    msfsAgent.TriggerPMDG(context, eventData);
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
 
-                    vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+                            msfsAgent.TriggerPMDG(context, eventData);
 
-                    msfsAgent.Disconnect();
+                            vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
+
+                            msfsAgent.Disconnect();
+
+                            break;
+
+                        case "Get":
+
+                            string varResult;
+
+                            msfsAgent = ConnectToSim(vaProxy);
+
+                            if (msfsAgent == null) return;
+
+                            context = context.Remove(0, 2);
+
+                            context = context.Remove(context.Length - 2);
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing PMDG variable data request: " + context, LOG_INFO);
+
+                            varResult = msfsAgent.TriggerReqPMDG(context);
+
+                            vaProxy.SetText(VARIABLE_NAMESPACE + ".PlaneState.PMDG_Variable", varResult);
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "FSUIPC returned value: " + varResult, LOG_INFO);
+
+                            vaProxy.WriteToLog(LOG_PREFIX + "Variable status: " + varResult, LOG_NORMAL);
+
+                            msfsAgent.Disconnect();
+
+                            break;
+
+                    }
 
                     break;
 
-                case "Regular":
+                case "K":
 
                     context = context.ToUpper();
 
                     msfsAgent = ConnectToSim(vaProxy);
-
+                                        
                     if (msfsAgent == null) return;
 
-                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing context: " + context, LOG_INFO);
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing Key Event: " + context, LOG_INFO);
                     switch (context)
                     {
-                        case "GETPLANESTATE":
-                            GetPlaneData(vaProxy, msfsAgent);
-                            break;
-
+                        
                         case "ADF_COMPLETE_SET":
                             eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
                             msfsAgent.TriggerEvent(EventTypes.ADF_COMPLETE_SET, eventData);
@@ -340,6 +385,11 @@ namespace MSFS
                             msfsAgent.TriggerEvent(EventTypes.FUELSYSTEM_VALVE_CLOSE, eventData);
                             break;
 
+                        case "ROTOR_BRAKE":
+                            eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".EventData");
+                            msfsAgent.TriggerEvent(EventTypes.ROTOR_BRAKE, eventData);
+                            break;
+
 
                         default:
 
@@ -358,16 +408,43 @@ namespace MSFS
                                 return;
                             }
                             break;
+                           
 
                     }
+                    
                     // if we get this far we've processed the command
 
                     vaProxy.WriteToLog(LOG_PREFIX + "Context processed: " + context, LOG_NORMAL);
 
                     msfsAgent.Disconnect();
 
+                    break;
+
+                case "A":
+
+                    double varRes;
+
+                    msfsAgent = ConnectToWASM(vaProxy);
+
+                    if (msfsAgent == null) return;
+
+                    context = context.Remove(0, 2);
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing simVar (A:): " + context, LOG_INFO);
+
+                    varRes = msfsAgent.TriggerReqSimVar(context);
+
+                    vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".PlaneState.SimVar", (decimal?)(double?)varRes);
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "SimVar value: " + varRes, LOG_INFO);
+                                        
+                    vaProxy.WriteToLog(LOG_PREFIX + "SimVar " + context + "status: " + varRes, LOG_NORMAL);
+
+                    msfsAgent.WASMDisconnect();
 
                     break;
+
+                    
 
             }
 

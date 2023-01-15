@@ -119,6 +119,7 @@ namespace MSFS
         ANTI_ICE_TOGGLE_ENG2,
         BAROMETRIC,                                   //Set local baro
         BAROMETRIC_STD_PRESSURE,                      //Set standard baro
+        ROTOR_BRAKE,
 
         ELECTRICAL_CIRCUIT_TOGGLE,
 
@@ -224,6 +225,7 @@ namespace MSFS
             _enumToNameDictionary.Add(EventTypes.ANTI_ICE_TOGGLE_ENG2, "ANTI_ICE_TOGGLE_ENG2");
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC, "BAROMETRIC");
             _enumToNameDictionary.Add(EventTypes.BAROMETRIC_STD_PRESSURE, "BAROMETRIC_STD_PRESSURE");
+            _enumToNameDictionary.Add(EventTypes.ROTOR_BRAKE, "ROTOR_BRAKE");
 
             _enumToNameDictionary.Add(EventTypes.ELECTRICAL_CIRCUIT_TOGGLE, "ELECTRICAL_CIRCUIT_TOGGLE");
             _enumToNameDictionary.Add(EventTypes.PMDG_EVENT, "PMDG_EVENT");

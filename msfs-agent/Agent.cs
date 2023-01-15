@@ -17,7 +17,8 @@ using WASimCommander.Enums;
 using WASimCommander.CLI.Client;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography.X509Certificates;
-
+using System.CodeDom;
+using System.Security.Cryptography;
 
 namespace MSFS
 {
@@ -559,6 +560,7 @@ namespace MSFS
             try
             {
                 
+               
                 int ivarData = int.Parse(varData);
 
                 FSUIPCConnection.Open();
@@ -568,6 +570,9 @@ namespace MSFS
                 FSUIPCConnection.SendControlToFS(val, ivarData);
 
                 FSUIPCConnection.Close();
+                
+             
+                
             }
             catch (Exception ex)
             {
@@ -578,16 +583,344 @@ namespace MSFS
                         
         }
 
+        public string TriggerReqPMDG(string varName)
+        {
 
-#endregion
+            try
+            {
+
+                string valueString = "NULL";
+
+                string variableType = "Bool";
+
+                int variableLength = 0;
+                
+                FSUIPCConnection.Open();                               
+
+                int address = (int)Enum.Parse(typeof(PMDGConditionVariables.PMDGVarAddress), varName);                               
+
+                int variableTypeC = (int)Enum.Parse(typeof(PMDGConditionVariables.PMDGVarTypes), varName);
+
+                switch (variableTypeC)
+                {
+                    case 11:
+
+                        variableType = "BYTE";
+                        variableLength = 1;
+
+                        break;
+
+                    case 12:
+
+                        variableType = "BYTEx2";
+                        variableLength = 2;
+
+                        break;
+
+                    case 13:
+
+                        variableType = "BYTEx3";
+                        variableLength = 3;
+
+                        break;
+
+                    case 14:
+
+                        variableType = "BYTEx4";
+                        variableLength = 4;
+
+                        break;
+
+                    case 17:
+
+                        variableType = "BYTEx7";
+                        variableLength = 7;
+
+                        break;
+
+                    case 18:
+
+                        variableType = "BYTEx8";
+                        variableLength = 8;
+
+                        break;
+
+                    case 116:
+
+                        variableType = "BYTEx16";
+                        variableLength = 16;
+
+                        break;
+
+                    case 20:
+
+                        variableType = "SHORT";
+                        variableLength = 1;
+
+                        break;
+
+                    case 21:
+
+                        variableType = "UINT";
+                        variableLength = 4;
+
+                        break;
+
+                    case 22:
+
+                        variableType = "INT";
+                        variableLength = 4;
+
+                        break;
+
+                    case 41:
+
+                        variableType = "FLT32";
+                        variableLength = 4;
+
+                        break;
+
+                    case 42:
+
+                        variableType = "FLT32x2";
+
+                        break;
+
+                    case 56:
+
+                        variableType = "CHARx6";
+                        variableLength = 6;
+
+                        break;
+
+                    case 513:
+
+                        variableType = "CHARx13";
+                        variableLength = 13;
+
+                        break;
+
+                    case 601:
+
+                        variableType = "DWORD";
+                        variableLength = 4;
+
+                        break;
+
+                    case 603:
+
+                        variableType = "DWORDx3"; 
+                        variableLength = 12;
+
+                        break;
+
+                    case 611:
+
+                        variableType = "WORD";
+                        variableLength = 2;
+
+                        break;
+
+                    case 612:
+
+                        variableType = "WORDx2";
+                        variableLength = 4;
+
+                        break;
+
+                    case 7:
+
+                        variableType = "STRING";
+                        variableLength = 9;
+
+                        break;
+
+                }
+
+                Offset myOffset = new Offset("", address, variableLength, false);
+
+                FSUIPCConnection.Process();
+
+                switch (variableType)
+                {
+                    case "BYTE":                      
+                    case "BYTEx2": 
+                    case "BYTEx3":
+                    case "BYTEx4":
+                    case "BYTEx7":
+                    case "BYTEx8":
+                    case "BYTEx16":
+
+                        byte[] valueByte2 = myOffset.GetValue<byte[]>();
+
+                        valueString = BitConverter.ToString(valueByte2);
+
+                        break;
+
+                    case "SHORT":
+
+                        short valueShort = myOffset.GetValue<short>();
+
+                        valueString = Convert.ToString(valueShort);
+
+                        break;
+
+                    case "INT":
+
+                        int valueInt = myOffset.GetValue<int>();
+
+                        valueString = Convert.ToString(valueInt);
+
+                        break;
+
+                    case "UINT":
+                    case "DWORD":
+                    case "DWORDx3":
+
+                        uint valueUint = myOffset.GetValue<uint>();
+
+                        valueString = Convert.ToString(valueUint);
+
+                        break;
+
+                    case "FLT32":
+                    case "FLT32x2":
+
+                        float valueFloat = myOffset.GetValue<float>();
+
+                        valueString = Convert.ToString(valueFloat);
+
+                        break;
+
+                    case "CHARx6":
+                    case "CHARx13":
+                    case "STRING":
+
+                        valueString = myOffset.GetValue<string>();
+
+                        break;
+
+                    case "WORD":
+                    case "WORDx2":
+
+                        ushort valueUshort = myOffset.GetValue<ushort>();
+
+                        valueString = Convert.ToString(valueUshort);
+
+                        break;
 
 
-#region Event Handlers
+                }
 
-/// <summary>
-/// Initializes all the event handles for the agent
-/// </summary>
-private void initEventHandlers()
+
+                myOffset.Disconnect();
+
+                FSUIPCConnection.Close();
+
+                return valueString;
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to receive variable data. Variable:{0}, Msg: {1}.", varName, ex.Message);
+                return "NULL";
+            }
+
+
+        }
+        #endregion
+
+        public double TriggerReqSimVar(string varName)
+        {                   
+            string unit = "NULL";
+
+            char last = varName[varName.Length - 1];
+
+            bool isIndex = Char.IsDigit(last);
+
+            SimVarFunc simVarFunc = new SimVarFunc();
+
+            int variableUnitID = (int)Enum.Parse(typeof(SimVarList), varName);
+
+            if (isIndex)
+            {
+                varName = varName.Remove(varName.Length - 1);
+
+                char blast = varName[varName.Length - 1];
+
+                bool isbIndex = Char.IsDigit(blast);
+
+                if (isbIndex)
+                {
+
+                    varName = varName.Remove(varName.Length - 2);
+
+                    varName = varName.ToUpper();
+
+                    varName = varName.Replace("_", " ");                                        
+
+                    unit = simVarFunc.GiveSimVarUnit(variableUnitID);
+
+                    string calcCode = "(A:" + varName + ":" + blast + last + ", " + unit + ")";
+
+                    _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
+
+                    Debug.WriteLine("Executed calculator code with 2 numbers: " + calcCode);
+
+                    return fResult;
+
+                }
+                else
+                {
+
+                    varName = varName.Remove(varName.Length - 1);
+
+                    varName = varName.ToUpper();
+
+                    varName = varName.Replace("_", " ");
+
+                    unit = simVarFunc.GiveSimVarUnit(variableUnitID);
+
+                    string calcCode = "(A:" + varName + ":" + last + ", " + unit + ")";
+
+                    _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
+
+                    Debug.WriteLine("Executed calculator code with 1 number: " + calcCode);
+
+                    return fResult;
+
+                }
+
+            }
+            else
+            {
+                
+
+                varName = varName.ToUpper();
+
+                varName = varName.Replace("_", " ");
+
+                unit = simVarFunc.GiveSimVarUnit(variableUnitID);
+
+                string calcCode = "(A:" + varName + ", " + unit + ")";
+
+                _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
+
+                Debug.WriteLine("Executed calculator code: " + calcCode);
+
+                return fResult;
+
+
+            }
+   
+
+        }
+        #region Event Handlers
+
+        /// <summary>
+        /// Initializes all the event handles for the agent
+        /// </summary>
+        private void initEventHandlers()
         {
             try
             {
