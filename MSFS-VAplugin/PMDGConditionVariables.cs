@@ -1,4 +1,10 @@
-﻿using System;
+﻿//=================================================================================================================
+// PROJECT: MSFS VAPlugin
+// PURPOSE: This file defines the data structures for PMDG variables.
+// AUTHOR: William Riker
+//================================================================================================================= 
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

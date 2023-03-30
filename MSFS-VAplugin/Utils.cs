@@ -1,8 +1,7 @@
 ﻿//=================================================================================================================
-// PROJECT: MSFS Agent V2
+// PROJECT: MSFS VAPlugin
 // PURPOSE: Contains misc. helper functions
-// AUTHOR: James Clark and William Riker
-// Licensed under the MS-PL license. See LICENSE.md file in the project root for full license information.
+// AUTHOR: William Riker
 //================================================================================================================= 
 using System;
 
