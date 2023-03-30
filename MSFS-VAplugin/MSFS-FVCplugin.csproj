@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MSFS</RootNamespace>
-    <AssemblyName>MSFS-VAplugin</AssemblyName>
+    <AssemblyName>MSFS-FVCplugin</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
@@ -92,9 +92,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="lib\WASimCommander\client_conf.ini" />
-    <None Include="LICENSE.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

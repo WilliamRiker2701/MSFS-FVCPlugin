@@ -31,7 +31,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS VAPlugin - v1.0";
+            return "MSFS-FVCplugin - v1.0";
         }
 
         /// <summary>
