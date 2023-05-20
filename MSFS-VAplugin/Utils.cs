@@ -7,9 +7,21 @@ using System;
 
 namespace MSFS
 {
-    // Credit for these functions come from the internet and various forums.
+
     public class Utils
     {
+        public static string current = "NULL";
+
+        public static string errvar = "NULL";
+
+        public static bool errcon = false;
+
+
+
+        public static void SetKeyName(string KeyName)
+        {
+            current = KeyName;
+        }
         public static double Deg2Rad(double deg)
         {
             return deg * Math.PI / 180;
@@ -40,52 +52,6 @@ namespace MSFS
             
             return Result; 
         }
-
-        static private string BCD16ToFrequency(int bcd)
-        {
-            byte[] bytes = BitConverter.GetBytes(bcd);
-            int high, low;
-            int mhz, khz;
-
-            // byte 1
-            high = bytes[1] >> 4;
-            low = bytes[1] & 0xF;
-            mhz = (10 * high) + low;
-
-            // byte 0
-            high = bytes[0] >> 4;
-            low = bytes[0] & 0xF;
-            khz = (100 * high) + (low * 10);
-
-            // calculate .25 spacing
-            khz += (khz % 50 == 0 ? 0 : 5);
-
-            return string.Format("1{0}.{1}", mhz, khz);
-        }
-
-        static private string BCO16ToFrequency(int bco)
-        {
-            byte[] bytes = BitConverter.GetBytes(bco);
-            int high, low;
-            string code;
-
-            // byte 0
-            high = bytes[1] >> 4;
-            low = bytes[1] & 0xF;
-
-            code = Convert.ToString(high, 8);
-            code += Convert.ToString(low, 8);
-
-            // byte 1
-            high = bytes[0] >> 4;
-            low = bytes[0] & 0xF;
-
-            code += Convert.ToString(high, 8);
-            code += Convert.ToString(low, 8);
-
-            return code;
-        }
-
 
     }
 }

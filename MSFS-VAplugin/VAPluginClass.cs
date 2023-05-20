@@ -15,6 +15,7 @@ using WASimCommander.CLI.Client;
 using WASimCommander.CLI;
 using System.Runtime.Remoting.Contexts;
 using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Concurrent;
 
 namespace MSFS
 {
@@ -26,12 +27,14 @@ namespace MSFS
         const string LOG_ERROR = "red";
         const string LOG_INFO = "grey";
 
+        
+
         /// <summary>
         /// Name of the plug-in as it should be shown in the UX
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.0";
+            return "MSFS-FVCplugin - v0.91";
         }
 
         /// <summary>
@@ -94,7 +97,9 @@ namespace MSFS
 
             if (String.IsNullOrEmpty(vaProxy.Context))
                 return;
+
             context = vaProxy.Context;
+
             if (context.Substring(0, 2) == "L:")
             {
 
@@ -107,7 +112,7 @@ namespace MSFS
 
                 }
             }
-            if (context.Substring(0, 2) == "P:")
+            else if (context.Substring(0, 2) == "P:")
             {
 
                 varKind = "PMDG";
@@ -121,24 +126,31 @@ namespace MSFS
 
             }
             
-            if (context.Substring(0, 2) == "A:")
+            else if (context.Substring(0, 2) == "A:")
             {
 
                 varKind = "A";
                                 
             }
 
-            if (context.Substring(0, 2) == "K:")
+            else if (context.Substring(0, 2) == "K:")
             {
 
                 varKind = "K";
 
             }
 
-            if (context.Substring(0, 3) == "CC:")
+            else if (context.Substring(0, 3) == "CC:")
             {
 
                 varKind = "CalcCode";
+
+            }
+
+            else if (context.Substring(0, 4) == "COM:")
+            {
+
+                varKind = "COM Key";
 
             }
 
@@ -150,10 +162,21 @@ namespace MSFS
                     {
                         case "Set":
 
+                            
+
+                            MSFS.Utils.errvar = context;
+
                             msfsCommander = ConnectToWASM(vaProxy);
 
-                            if (msfsCommander == null) return;
+                            while (MSFS.Utils.errcon == true)
+                            {
 
+                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                                msfsCommander = ConnectToWASM(vaProxy);
+
+                            }
+                                                                                                           
                             context = context.Remove(0, 2);
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing Local Variable new value set: " + context, LOG_INFO);
@@ -162,9 +185,10 @@ namespace MSFS
 
                             msfsCommander.TriggerWASM(context, eventData);
 
-                            vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
+                            if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
 
-                            msfsCommander.WASMDisconnect();
+                            msfsCommander.WASMDisconnect();                           
+                           
 
                             break;
 
@@ -174,9 +198,18 @@ namespace MSFS
 
                             string lVarSt = "NULL";
 
+                            MSFS.Utils.errvar = context;
+
                             msfsCommander = ConnectToWASM(vaProxy);
 
-                            if (msfsCommander == null) return;
+                            while (MSFS.Utils.errcon == true)
+                            {
+
+                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                                msfsCommander = ConnectToWASM(vaProxy);
+
+                            }
 
                             context = context.Remove(0, 2);
 
@@ -207,7 +240,7 @@ namespace MSFS
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Local Variable request returns value: " + varResult, LOG_INFO);
 
-                            vaProxy.WriteToLog(LOG_PREFIX + "Variable status: " + varResult, LOG_NORMAL);
+                            if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Present value: " + varResult + "| Variable: " + context, LOG_NORMAL);
 
                             msfsCommander.WASMDisconnect();
 
@@ -235,7 +268,7 @@ namespace MSFS
 
                             msfsCommander.TriggerPMDG(context, eventData);
 
-                            vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
+                            if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
 
                             msfsCommander.Disconnect();
 
@@ -261,7 +294,7 @@ namespace MSFS
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "FSUIPC data request returns: " + varResult, LOG_INFO);
 
-                            vaProxy.WriteToLog(LOG_PREFIX + "Variable status: " + varResult, LOG_NORMAL);
+                            if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Present value: " + varResult + "| Variable: " + context, LOG_NORMAL);
 
                             msfsCommander.Disconnect();
 
@@ -273,19 +306,54 @@ namespace MSFS
 
                 case "K":
 
-                    msfsCommander = ConnectToWASM(vaProxy);
-
-                    if (msfsCommander == null) return;
+                    FsControlList reqKey;
 
                     context = context.Remove(0, 2);
+
+                    Utils.SetKeyName(context);
+
+                    msfsCommander = ConnectToSim(vaProxy);
+
+                    if (msfsCommander == null) return;
 
                     if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing Key Event: " + context, LOG_INFO);
 
                     eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".ValueSet");
 
-                    msfsCommander.TriggerKey(context, eventData);
+                    reqKey = (FsControlList)Enum.Parse(typeof(FsControlList), context, false);
 
-                    vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
+                    msfsCommander.TriggerKeySimconnect(reqKey, eventData);
+
+                    if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
+
+                    msfsCommander.Disconnect();
+
+                    break;
+
+                case "COM Key":
+                                        
+                    MSFS.Utils.errvar = context;
+
+                    msfsCommander = ConnectToWASM(vaProxy);
+
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM(vaProxy);
+
+                    }
+
+                    context = context.Remove(0, 4);
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing Key Event: " + context, LOG_INFO);
+
+                    eventData = vaProxy.GetText(VARIABLE_NAMESPACE + ".ValueSet");
+
+                    msfsCommander.TriggerComKey(context, eventData);
+
+                    if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New value: " + eventData + "| Variable: " + context, LOG_NORMAL);
 
                     msfsCommander.WASMDisconnect();
 
@@ -297,9 +365,18 @@ namespace MSFS
 
                     string varResSt = "NULL";
 
+                    MSFS.Utils.errvar = context;
+
                     msfsCommander = ConnectToWASM(vaProxy);
 
-                    if (msfsCommander == null) return;
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM(vaProxy);
+
+                    }
 
                     context = context.Remove(0, 2);
 
@@ -326,7 +403,7 @@ namespace MSFS
 
                     if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "SimVar request returns value: " + varRes, LOG_NORMAL);
 
-                    vaProxy.WriteToLog(LOG_PREFIX + "Variable status: " + varRes, LOG_NORMAL);
+                    if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Present value: " + varRes + "| Variable: " + context, LOG_NORMAL);
 
                     msfsCommander.WASMDisconnect();
 
@@ -335,24 +412,34 @@ namespace MSFS
                 case "CalcCode":
 
 
+                    MSFS.Utils.errvar = context;
+
                     msfsCommander = ConnectToWASM(vaProxy);
 
-                    if (msfsCommander == null) return;
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM(vaProxy);
+
+                    }
+
 
                     context = context.Remove(0, 3);
 
-                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing calculator code: " + context, LOG_INFO);
+                    if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Sending calculator code: " + context, LOG_INFO);
 
                     varRes = msfsCommander.TriggerCalcCode(context);
 
                     vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".ValueGet", (decimal?)(double?)varRes);
 
-                    vaProxy.WriteToLog(LOG_PREFIX + "Calculator code response: " + varRes, LOG_NORMAL);
+                    if (MonitoringMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Calculator code response: " + varRes, LOG_NORMAL);
 
                     msfsCommander.WASMDisconnect();
+                    
 
                     break;
-
 
 
             }
@@ -372,6 +459,15 @@ namespace MSFS
                 return false;
         }
 
+        private static bool MonitoringMode(dynamic vaProxy)
+        {
+            // enables more detailed logging
+            bool? result = vaProxy.GetBoolean(VARIABLE_NAMESPACE + ".MonitoringMode");
+            if (result.HasValue)
+                return result.Value;
+            else
+                return false;
+        }
 
         /// <summary>
         /// Creates a connection to the sim
@@ -385,7 +481,7 @@ namespace MSFS
             if (msfsCommander.Connected)
             {
 
-                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to SimConnect.", LOG_INFO);
+                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to SimConnect.", LOG_INFO);                              
                 return msfsCommander;
             }
             else
@@ -404,21 +500,31 @@ namespace MSFS
         {
 
             Commander msfsCommander = new Commander();
-            msfsCommander.WASMConnect();
+            msfsCommander.WASMConnect1();
 
             if (msfsCommander.WAServerConnected)
             {
 
                 if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Successfully connected to WASM.", LOG_INFO);
+
+                vaProxy.SetText(VARIABLE_NAMESPACE + ".sconnect", "1");
+
+                MSFS.Utils.errcon = false;
+
+
                 return msfsCommander;
             }
             else
             {
                 if (msfsCommander != null) msfsCommander.WASMDisconnect();
-                vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to WASM.", LOG_ERROR);
+                vaProxy.WriteToLog(LOG_PREFIX + "Couldn't make a connection to WASM, context: " + MSFS.Utils.errvar, LOG_ERROR);
+
+                vaProxy.SetText(VARIABLE_NAMESPACE + ".sconnect", "0");
+
+                MSFS.Utils.errcon = true;
+
                 return null;
             }
-
 
         }
 

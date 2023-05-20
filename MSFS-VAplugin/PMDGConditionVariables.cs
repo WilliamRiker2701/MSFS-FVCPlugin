@@ -29,7 +29,12 @@ namespace MSFS
             ADF_StandbyFrequency = 0x6470,
             FUEL_PumpFwdSw = 0x6479,
             ENG_EECSwitch = 0x6444,
-            ENG_StartValve = 0x644C
+            ENG_StartValve = 0x644C,
+            MCP_Heading = 0x652C,
+            MCP_Altitude = 0x652E,
+            MCP_VertSpeed = 0x6530,
+            MCP_IASMach = 0x6524,
+            LTS_PedPanelKnob = 0x65D0,
 
 
 
@@ -49,7 +54,13 @@ namespace MSFS
             ADF_StandbyFrequency = 21,
             FUEL_PumpFwdSw = 12,
             ENG_EECSwitch = 12,
-            ENG_StartValve = 12
+            ENG_StartValve = 12,
+            MCP_Heading = 611,
+            MCP_Altitude = 611,
+            MCP_VertSpeed = 20,
+            MCP_IASMach = 42,
+            LTS_PedPanelKnob = 20,
+
 
 
         }

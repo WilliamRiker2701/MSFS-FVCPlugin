@@ -18,6 +18,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography.X509Certificates;
 using System.CodeDom;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace MSFS
 {
@@ -31,6 +32,15 @@ namespace MSFS
         bool _connected = false;
         bool _wasmconnected = false;
         public bool readsSep = false;
+        public string current = "NULL";
+
+        public enum WasmModuleStatus
+        {
+            Unknown, NotFound, Found, Connected
+        }
+
+        public bool WasmAvailable => WasmStatus != WasmModuleStatus.NotFound;
+        public WasmModuleStatus WasmStatus { get; private set; } = WasmModuleStatus.Unknown;
 
 
         Dictionary<RequestTypes, bool> requestPending = new Dictionary<RequestTypes, bool>();
@@ -101,6 +111,8 @@ namespace MSFS
                 try
                 {
                     _simConnection = new Microsoft.FlightSimulator.SimConnect.SimConnect("msfs-agent", IntPtr.Zero, WM_USER_SIMCONNECT, null, 0);
+                    initEventHandlers();
+                    initEvents();
                     Connected = true;
                 }
                 catch (Exception ex)
@@ -117,12 +129,112 @@ namespace MSFS
 
             if (_waSimConnection == null)
             {
+
                 try
                 {
                     _waSimConnection = new WASimCommander.CLI.Client.WASimClient(0xC57E57E9);
                     initWASMHandlers();
+                    _waSimConnection.connectSimulator(2000U);
                     _waSimConnection.connectServer();
-                    WAServerConnected = true;
+                    WAServerConnected = _waSimConnection.isConnected();
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                }
+            }
+
+
+
+        }
+
+        public void WASMConnect1()
+        {
+
+            if (_waSimConnection == null)
+            {
+
+                try
+                {
+                    _waSimConnection = new WASimCommander.CLI.Client.WASimClient(0xC57E57E9);
+                    _waSimConnection.connectSimulator();
+                    _waSimConnection.connectServer();
+                    WAServerConnected = _waSimConnection.isConnected();
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                }
+            }
+
+
+
+        }
+
+        public void WASMConnect2()
+        {
+
+            if (_waSimConnection == null)
+            {
+
+                Debug.WriteLine("WASM client not initialized");
+
+            }
+
+            HR hr;
+            int count = 0;
+
+            do
+            {
+                _waSimConnection = new WASimCommander.CLI.Client.WASimClient(0xC57E57E9);
+                hr = _waSimConnection.connectSimulator(2000U);
+            }
+            while (hr == HR.TIMEOUT && ++count < 11);
+
+            if (hr == HR.OK) 
+            {
+
+                initWASMHandlers();
+                hr = _waSimConnection.connectServer();
+            }
+
+
+                
+            else
+
+                Debug.WriteLine("WASM Client could not connect to SimConnect for unknown reason");
+
+            if (hr != HR.OK)
+            {
+                WasmStatus = WasmModuleStatus.NotFound;
+                Debug.WriteLine("WASM Server not found or couldn't connect");
+                return;
+            }
+
+            WasmStatus = WasmModuleStatus.Connected;
+            WAServerConnected = _waSimConnection.isConnected();
+            Debug.WriteLine("Connected to WASimConnect Server");                    
+
+
+        }
+
+
+
+
+
+        public void WASMConnectlongtimeout()
+        {
+
+            if (_waSimConnection == null)
+            {
+                try
+                {
+                    _waSimConnection = new WASimCommander.CLI.Client.WASimClient(0xC57E57E9);
+                    initWASMHandlers();
+                    _waSimConnection.connectServer(2000);
+                    WAServerConnected = _waSimConnection.isConnected();
 
                 }
                 catch (Exception ex)
@@ -174,7 +286,9 @@ namespace MSFS
             {
                 DisableMessagePolling();
 
-
+                _simConnection.UnsubscribeFromSystemEvent(FsControlList.SIMSTART);
+                _simConnection.UnsubscribeFromSystemEvent(FsControlList.SIMSTOP);
+                _simConnection.UnsubscribeFromSystemEvent(FsControlList.PAUSE);
                 _simConnection.Dispose();
 
                 Debug.WriteLine("Connection to sim closed");
@@ -191,6 +305,23 @@ namespace MSFS
                 Connected = false;
             }
         }
+
+
+
+        private void initEvents()
+        {
+
+            string keyName = Utils.current;
+
+            Enum.TryParse(keyName, out FsControlList item);
+
+            {
+                _simConnection.MapClientEventToSimEvent(item, keyName);
+                _simConnection.AddClientEventToNotificationGroup(NOTIFICATION_GROUPS.DEFAULT, item, false);
+            }
+
+        }
+
 
         public void WASMDisconnect()
         {
@@ -219,6 +350,7 @@ namespace MSFS
             }
 
         }
+
 
 
         #region Operations
@@ -292,7 +424,7 @@ namespace MSFS
 
 
 
-            _waSimConnection.executeCalculatorCode(calcCode, 0, out double fResult, out string sResult);
+            _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
 
             Debug.WriteLine($"Calculator code '{calcCode}' returned: {fResult} and '{sResult}'", "<<");
 
@@ -445,7 +577,7 @@ namespace MSFS
                     case 20:
 
                         variableType = "SHORT";
-                        variableLength = 1;
+                        variableLength = 2;
 
                         break;
 
@@ -473,6 +605,7 @@ namespace MSFS
                     case 42:
 
                         variableType = "FLT32x2";
+                        variableLength = 8;
 
                         break;
 
@@ -618,7 +751,7 @@ namespace MSFS
 
 
         }
-        public void TriggerKey(string varName, string varData = "0")
+        public void TriggerComKey(string varName, string varData = "0")
         {
 
             //------CALCULATOR CODE--------------------------------------------------------------
@@ -671,7 +804,65 @@ namespace MSFS
 
         }
 
-        #endregion
+        public void TriggerKey(string varName, string varData = "0")
+        {
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            try
+            {
+
+
+                int ivarData = int.Parse(varData);
+
+                FSUIPCConnection.Open();
+
+                var val = (int)Enum.Parse(typeof(FsControl), varName);
+
+                FSUIPCConnection.SendControlToFS(val, ivarData);
+
+                FSUIPCConnection.Close();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to send event data. Data:{0}, Msg: {1}.", varData, ex.Message);
+                return;
+            }
+
+
+        }
+
+        public void TriggerKeySimconnect(FsControlList varName, string varData = "0")
+        {
+
+            UInt32 kData;
+            Decimal d;
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            try
+            {                                
+
+                        Byte[] Bytes = BitConverter.GetBytes(Convert.ToInt32(varData));
+                        kData = BitConverter.ToUInt32(Bytes, 0);
+
+                    
+                
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to convert data. Key Data:{0}, Msg: {1}.", varData, ex.Message);
+                return;
+            }
+
+            _simConnection.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, varName, kData, NOTIFICATION_GROUPS.DEFAULT, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+
+            Debug.WriteLine("Event sent...");
+
+        }
 
         public double TriggerReqSimVar(string varName)
         {
@@ -840,6 +1031,9 @@ namespace MSFS
 
 
         }
+
+        #endregion
+
         #region Event Handlers
 
         /// <summary>
@@ -956,7 +1150,56 @@ namespace MSFS
         }
         #endregion
 
+        private void initEventHandlers()
+        {
+            try
+            {
+                _simConnection.OnRecvOpen += new SimConnect.RecvOpenEventHandler(simconnect_OnRecvOpen);
+                _simConnection.OnRecvQuit += new SimConnect.RecvQuitEventHandler(simconnect_OnRecvQuit);
+                _simConnection.OnRecvException += new SimConnect.RecvExceptionEventHandler(simconnect_OnRecvException);
+                _simConnection.OnRecvEvent += new SimConnect.RecvEventEventHandler(simconnect_OnRecvEvent);
+                _simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
 
+                _simConnection.SubscribeToSystemEvent(FsControlList.SIMSTART, "SimStart");
+                _simConnection.SubscribeToSystemEvent(FsControlList.SIMSTOP, "SimStop");
+
+                // I can't recall why this is needed
+                _simConnection.SetNotificationGroupPriority(NOTIFICATION_GROUPS.DEFAULT, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to initiate event handlers. Msg:" + ex.Message);
+            }
+        }
+
+        
+
+        private void simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT recEvent)
+        {
+
+            // I'm still try to figure out when these get triggered.  
+            // They often fire rapidly when exiting and entering flights.            
+
+            switch ((FsControlList)recEvent.uEventID)
+            {
+                case FsControlList.SIMSTART:
+
+                    Debug.WriteLine("Sim running");
+                    break;
+
+                case FsControlList.SIMSTOP:
+
+                    Debug.WriteLine("Sim stopped");
+                    break;
+
+                case FsControlList.PAUSE:
+
+                    Debug.WriteLine("Sim paused");
+                    break;
+
+            }
+        }
         private enum Requests : uint
         {
             REQUEST_ID_1_FLOAT,
