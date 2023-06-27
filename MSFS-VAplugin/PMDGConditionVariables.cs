@@ -35,6 +35,9 @@ namespace MSFS
             MCP_VertSpeed = 0x6530,
             MCP_IASMach = 0x6524,
             LTS_PedPanelKnob = 0x65D0,
+            FUEL_annunLOWPRESS_Fwd = 0x646A,
+            FUEL_annunLOWPRESS_Aft = 0x646C,
+            FUEL_annunLOWPRESS_Ctr = 0x646E,
 
 
 
@@ -60,7 +63,9 @@ namespace MSFS
             MCP_VertSpeed = 20,
             MCP_IASMach = 42,
             LTS_PedPanelKnob = 20,
-
+            FUEL_annunLOWPRESS_Fwd = 12,
+            FUEL_annunLOWPRESS_Aft = 12,
+            FUEL_annunLOWPRESS_Ctr = 12,
 
 
         }

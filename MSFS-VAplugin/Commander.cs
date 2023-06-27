@@ -19,6 +19,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.CodeDom;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using System.Net;
+
+
+
 
 namespace MSFS
 {
@@ -33,6 +38,7 @@ namespace MSFS
         bool _wasmconnected = false;
         public bool readsSep = false;
         public string current = "NULL";
+
 
         public enum WasmModuleStatus
         {
@@ -114,10 +120,14 @@ namespace MSFS
                     initEventHandlers();
                     initEvents();
                     Connected = true;
+
+      
+
+
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Unable to connect to sim. Msg:" + ex.Message);
+                    VoiceAttackPlugin.LogOutput("Unable to connect to sim.", "grey");
                 }
             }
 
@@ -141,7 +151,7 @@ namespace MSFS
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                    VoiceAttackPlugin.LogOutput("Unable to connect to WASM.", "grey");
                 }
             }
 
@@ -165,7 +175,7 @@ namespace MSFS
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                    VoiceAttackPlugin.LogOutput("Unable to connect to WASM.", "grey");
                 }
             }
 
@@ -179,7 +189,7 @@ namespace MSFS
             if (_waSimConnection == null)
             {
 
-                Debug.WriteLine("WASM client not initialized");
+                VoiceAttackPlugin.LogOutput("WASM client not initialized.", "grey");
 
             }
 
@@ -204,18 +214,18 @@ namespace MSFS
                 
             else
 
-                Debug.WriteLine("WASM Client could not connect to SimConnect for unknown reason");
+                VoiceAttackPlugin.LogOutput("WASM Client could not connect to SimConnect for unknown reason.", "grey");
 
             if (hr != HR.OK)
             {
                 WasmStatus = WasmModuleStatus.NotFound;
-                Debug.WriteLine("WASM Server not found or couldn't connect");
+                VoiceAttackPlugin.LogOutput("WASM Server not found or couldn't connect.", "grey");
                 return;
             }
 
             WasmStatus = WasmModuleStatus.Connected;
             WAServerConnected = _waSimConnection.isConnected();
-            Debug.WriteLine("Connected to WASimConnect Server");                    
+            VoiceAttackPlugin.LogOutput("Connected to WASimConnect Server.", "grey");
 
 
         }
@@ -239,7 +249,7 @@ namespace MSFS
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Unable to connect to WASM. Msg:" + ex.Message);
+                    VoiceAttackPlugin.LogOutput("Unable to connect to WASM.", "grey");
                 }
             }
 
@@ -291,11 +301,11 @@ namespace MSFS
                 _simConnection.UnsubscribeFromSystemEvent(FsControlList.PAUSE);
                 _simConnection.Dispose();
 
-                Debug.WriteLine("Connection to sim closed");
+                VoiceAttackPlugin.LogOutput("Connection to sim closed.", "grey");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to Disconnect and clean up. Msg:" + ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to Disconnect and clean up.", "grey");
             }
             finally
             {
@@ -336,11 +346,11 @@ namespace MSFS
                 // delete the client
                 _waSimConnection.Dispose();
 
-                Debug.WriteLine("Connection to WASM closed");
+                VoiceAttackPlugin.LogOutput("Connection to WASM closed.", "grey");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to Disconnect WASM. Msg:" + ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to Disconnect WASM.", "grey");
             }
             finally
             {
@@ -376,6 +386,8 @@ namespace MSFS
         /// <param name="varData"></param>
         public void TriggerWASM(string varName, string varData = "0")
         {
+            VoiceAttackPlugin.LogOutput("Triggering WASM write method...", "grey");
+
             double dData;
 
             if (String.IsNullOrWhiteSpace(varData)) varData = "0";
@@ -388,7 +400,7 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to trigger WASM method. Data:{0}, Msg: {1}.", varData, ex.Message);
+                VoiceAttackPlugin.LogOutput("WASM method failed.", "grey");
                 return;
             }
 
@@ -416,25 +428,73 @@ namespace MSFS
 
         }
 
+        public double GetLVarFSUIPC(string varName)
+        {
+            VoiceAttackPlugin.LogOutput("Reading Local Variable through FSUIPC...", "grey");
+
+            double varResult;
+
+            FSUIPCConnection.Open();
+
+            varResult = FSUIPCConnection.ReadLVar(varName);
+
+            FSUIPCConnection.Close();
+
+            return varResult;
+
+
+
+        }
+
+        public void SetLVarFSUIPC(string varName, string varData = "0")
+        {
+
+            VoiceAttackPlugin.LogOutput("Writing Local Variable through FSUIPC...", "grey");
+
+            if (String.IsNullOrWhiteSpace(varData)) varData = "0";
+
+            try
+            {
+
+
+                double dData = double.Parse(varData);
+
+                FSUIPCConnection.Open();
+
+                FSUIPCConnection.WriteLVar(varName, dData);
+
+                FSUIPCConnection.Close();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                VoiceAttackPlugin.LogOutput("Failed to write data.", "grey");
+                return;
+            }
+
+
+        }
+
         public double TriggerCalcCode(string calcCode = "0")
         {
 
 
             //------CALCULATOR CODE--------------------------------------------------------------
 
-
+            VoiceAttackPlugin.LogOutput("Sending calculator code...", "grey");
 
             _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
 
-            Debug.WriteLine($"Calculator code '{calcCode}' returned: {fResult} and '{sResult}'", "<<");
-
+            VoiceAttackPlugin.LogOutput("Calculator code " + calcCode + " returned: " + fResult + " and " + sResult, "grey");
             //----------------------------------------------------------------------------------
 
             //_waSimConnection.setVariable(new VariableRequest(varName), dData);
 
             //_waSimConnection.setLocalVariable(varName, dData);
 
-            Debug.WriteLine("setLocalVariable() variable sent...");
+
 
             return fResult;
 
@@ -450,6 +510,7 @@ namespace MSFS
 
             //------CALCULATOR CODE--------------------------------------------------------------
 
+            VoiceAttackPlugin.LogOutput("Triggering WASM read method...", "grey");
 
             string calcCode = "(L:" + varName + ")";
 
@@ -476,6 +537,7 @@ namespace MSFS
         /// <param name="varData"></param>
         public void TriggerPMDG(string varName, string varData = "0")
         {
+            VoiceAttackPlugin.LogOutput("Triggering PMDG write method...", "grey");
 
             if (String.IsNullOrWhiteSpace(varData)) varData = "0";
 
@@ -498,7 +560,7 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to send event data. Data:{0}, Msg: {1}.", varData, ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to send data.", "grey");
                 return;
             }
 
@@ -507,6 +569,7 @@ namespace MSFS
 
         public string TriggerReqPMDG(string varName)
         {
+            VoiceAttackPlugin.LogOutput("Triggering PMDG read method...", "grey");
 
             try
             {
@@ -745,7 +808,7 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to receive variable data. Variable:{0}, Msg: {1}.", varName, ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to receive data.", "grey");
                 return "NULL";
             }
 
@@ -754,7 +817,7 @@ namespace MSFS
         public void TriggerComKey(string varName, string varData = "0")
         {
 
-            //------CALCULATOR CODE--------------------------------------------------------------
+            VoiceAttackPlugin.LogOutput("Triggering special Key Event method.", "grey");
 
             if (varName == "XPNDR_SET")
             {
@@ -791,7 +854,9 @@ namespace MSFS
 
             _waSimConnection.executeCalculatorCode(calcCode, 0, out double fResult, out string sResult);
 
-            Debug.WriteLine($"Calculator code '{calcCode}' returned: {fResult} and '{sResult}'", "<<");
+            VoiceAttackPlugin.LogOutput("Calculator code " + calcCode + " returned: " + fResult + " and " + sResult, "grey");
+
+            
 
             //----------------------------------------------------------------------------------
 
@@ -799,13 +864,13 @@ namespace MSFS
 
             //_waSimConnection.setLocalVariable(varName, dData);
 
-            Debug.WriteLine("setLocalVariable() variable sent...");
 
 
         }
 
         public void TriggerKey(string varName, string varData = "0")
         {
+            VoiceAttackPlugin.LogOutput("Triggering Key Event method.", "grey");
 
             if (String.IsNullOrWhiteSpace(varData)) varData = "0";
 
@@ -828,7 +893,7 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to send event data. Data:{0}, Msg: {1}.", varData, ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to send event data.", "grey");
                 return;
             }
 
@@ -837,6 +902,8 @@ namespace MSFS
 
         public void TriggerKeySimconnect(FsControlList varName, string varData = "0")
         {
+
+            VoiceAttackPlugin.LogOutput("Triggering Key Event method.", "grey");
 
             UInt32 kData;
             Decimal d;
@@ -854,18 +921,20 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to convert data. Key Data:{0}, Msg: {1}.", varData, ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to send event data.", "grey");
                 return;
             }
 
             _simConnection.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, varName, kData, NOTIFICATION_GROUPS.DEFAULT, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
 
-            Debug.WriteLine("Event sent...");
+            VoiceAttackPlugin.LogOutput("Data sent.", "grey");
 
         }
 
         public double TriggerReqSimVar(string varName)
         {
+            VoiceAttackPlugin.LogOutput("Triggering SimVar read method...", "grey");
+
             string unit = "NULL";
 
             char last = varName[varName.Length - 1];
@@ -915,6 +984,8 @@ namespace MSFS
 
                         Debug.WriteLine("Executed calculator code with 3 numbers: " + calcCode);
 
+                        VoiceAttackPlugin.LogOutput("Executed calculator code with 3 index digits: " + calcCode, "grey");
+
                         if (varName == "TRANSPONDER CODE")
                         {
 
@@ -945,7 +1016,7 @@ namespace MSFS
 
                         _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
 
-                        Debug.WriteLine("Executed calculator code with 2 numbers: " + calcCode);
+                        VoiceAttackPlugin.LogOutput("Executed calculator code with 2 index digits: " + calcCode, "grey");
 
                         if (varName == "TRANSPONDER CODE")
                         {
@@ -981,7 +1052,7 @@ namespace MSFS
 
                     _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
 
-                    Debug.WriteLine("Executed calculator code with 1 number: " + calcCode);
+                    VoiceAttackPlugin.LogOutput("Executed calculator code with 1 index digit: " + calcCode, "grey");
 
                     if (varName == "TRANSPONDER CODE")
                     {
@@ -1015,7 +1086,8 @@ namespace MSFS
 
                 _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
 
-                Debug.WriteLine("Executed calculator code: " + calcCode);
+
+                VoiceAttackPlugin.LogOutput("Executed calculator code: " + calcCode, "grey");
 
                 if (varName == "TRANSPONDER CODE")
                 {
@@ -1031,7 +1103,126 @@ namespace MSFS
 
 
         }
+        public bool SBFetch()
+        {
+            bool fetchRes;
 
+
+
+            VoiceAttackPlugin.LogOutput("SimBrief fetch in started...", "grey");
+
+            SimBriefFetch simbriefFetch = new SimBriefFetch();
+
+            fetchRes = simbriefFetch.Load();
+
+
+            VoiceAttackPlugin.LogOutput("SimBrief data received: ", "blue");
+
+            TriggerCalcCode(Utils.sbCostIndex + " (>L:SimBrief_CostIndex)");
+            VoiceAttackPlugin.LogOutput("CostIndex: " + Utils.sbCostIndex, "blue");
+
+            TriggerCalcCode(Utils.sbOriginElevation + " (>L:SimBrief_OriginElevation)");
+            VoiceAttackPlugin.LogOutput("OriginElevation: " + Utils.sbOriginElevation, "blue");
+
+            TriggerCalcCode(Utils.sbOriginTransAlt + " (>L:SimBrief_OriginTransAlt)");
+            VoiceAttackPlugin.LogOutput("OriginTransAlt: " + Utils.sbOriginTransAlt, "blue");
+
+            TriggerCalcCode(Utils.sbOriginTransLevel + " (>L:SimBrief_OriginTransLevel)");
+            VoiceAttackPlugin.LogOutput("OriginTransLevel: " + Utils.sbOriginTransLevel, "blue");
+
+            TriggerCalcCode(Utils.sbOriginWindDir + " (>L:SimBrief_OriginWindDir)");
+            VoiceAttackPlugin.LogOutput("OriginWindDir: " + Utils.sbOriginWindDir, "blue");
+
+            TriggerCalcCode(Utils.sbOriginWindSpd + " (>L:SimBrief_OriginWindSpd)");
+            VoiceAttackPlugin.LogOutput("OriginWindSpd: " + Utils.sbOriginWindSpd, "blue");
+
+            TriggerCalcCode(Utils.sbOriginQNH + " (>L:SimBrief_OriginQNH)");
+            VoiceAttackPlugin.LogOutput("OriginQNH: " + Utils.sbOriginQNH, "blue");
+
+            TriggerCalcCode(Utils.sbOriginBaro + " (>L:SimBrief_OriginBaro)");
+            VoiceAttackPlugin.LogOutput("OriginBaro: " + Utils.sbOriginBaro, "blue");
+
+            TriggerCalcCode(Utils.sbAltnElevation + " (>L:SimBrief_AltnElevation)");
+            VoiceAttackPlugin.LogOutput("AltnElevation: " + Utils.sbAltnElevation, "blue");
+
+            TriggerCalcCode(Utils.sbAltnTransAlt + " (>L:SimBrief_AltnTransAlt)");
+            VoiceAttackPlugin.LogOutput("AltnTransAlt: " + Utils.sbAltnTransAlt, "blue");
+
+            TriggerCalcCode(Utils.sbAltnTransLevel + " (>L:SimBrief_AltnTransLevel)");
+            VoiceAttackPlugin.LogOutput("AltnTransLevel: " + Utils.sbAltnTransLevel, "blue");
+
+            TriggerCalcCode(Utils.sbAltnWindDir + " (>L:SimBrief_AltnWindDir)");
+            VoiceAttackPlugin.LogOutput("AltnWindDir: " + Utils.sbAltnWindDir, "blue");
+
+            TriggerCalcCode(Utils.sbAltnWindSpd + " (>L:SimBrief_AltnWindSpd)");
+            VoiceAttackPlugin.LogOutput("AltnWindSpd: " + Utils.sbAltnWindSpd, "blue");
+
+            TriggerCalcCode(Utils.sbAltnQNH + " (>L:SimBrief_AltnQNH)");
+            VoiceAttackPlugin.LogOutput("AltnQNH: " + Utils.sbAltnQNH, "blue");
+
+            TriggerCalcCode(Utils.sbAltnBaro + " (>L:SimBrief_AltnBaro)");
+            VoiceAttackPlugin.LogOutput("AltnBaro: " + Utils.sbAltnBaro, "blue");
+
+            TriggerCalcCode(Utils.sbDestElevation + " (>L:SimBrief_DestElevation)");
+            VoiceAttackPlugin.LogOutput("DestElevation: " + Utils.sbDestElevation, "blue");
+
+            TriggerCalcCode(Utils.sbDestTransAlt + " (>L:SimBrief_DestTransAlt)");
+            VoiceAttackPlugin.LogOutput("DestTransAlt: " + Utils.sbDestTransAlt, "blue");
+
+            TriggerCalcCode(Utils.sbDestTransLevel + " (>L:SimBrief_DestTransLevel)");
+            VoiceAttackPlugin.LogOutput("DestTransLevel: " + Utils.sbDestTransLevel, "blue");
+
+            TriggerCalcCode(Utils.sbDestWindDir + " (>L:SimBrief_DestWindDir)");
+            VoiceAttackPlugin.LogOutput("DestWindDir: " + Utils.sbDestWindDir, "blue");
+
+            TriggerCalcCode(Utils.sbDestWindSpd + " (>L:SimBrief_DestWindSpd)");
+            VoiceAttackPlugin.LogOutput("DestWindSpd: " + Utils.sbDestWindSpd, "blue");
+
+            TriggerCalcCode(Utils.sbDestQNH + " (>L:SimBrief_DestQNH)");
+            VoiceAttackPlugin.LogOutput("DestQNH: " + Utils.sbDestQNH, "blue");
+
+            TriggerCalcCode(Utils.sbDestBaro + " (>L:SimBrief_DestBaro)");
+            VoiceAttackPlugin.LogOutput("DestBaro: " + Utils.sbDestBaro, "blue");
+
+            TriggerCalcCode(Utils.sbFinRes + " (>L:SimBrief_FinRes)");
+            VoiceAttackPlugin.LogOutput("FinRes: " + Utils.sbFinRes, "blue");
+
+            TriggerCalcCode(Utils.sbAltnFuel + " (>L:SimBrief_AltnFuel)");
+            VoiceAttackPlugin.LogOutput("AltnFuel: " + Utils.sbAltnFuel, "blue");
+
+            TriggerCalcCode(Utils.sbFinresPAltn + " (>L:SimBrief_FinresPAltn)");
+            VoiceAttackPlugin.LogOutput("FinresPAltn: " + Utils.sbFinresPAltn, "blue");
+
+            TriggerCalcCode(Utils.sbFuel + " (>L:SimBrief_Fuel)");
+            VoiceAttackPlugin.LogOutput("Fuel: " + Utils.sbFuel, "blue");
+
+            TriggerCalcCode(Utils.sbPassenger + " (>L:SimBrief_Passenger)");
+            VoiceAttackPlugin.LogOutput("Passenger: " + Utils.sbPassenger, "blue");
+
+            TriggerCalcCode(Utils.sbBags + " (>L:SimBrief_Bags)");
+            VoiceAttackPlugin.LogOutput("Bags: " + Utils.sbBags, "blue");
+
+            TriggerCalcCode(Utils.sbWeightPax + " (>L:SimBrief_WeightPax)");
+            VoiceAttackPlugin.LogOutput("WeightPax: " + Utils.sbWeightPax, "blue");
+
+            TriggerCalcCode(Utils.sbWeightCargo + " (>L:SimBrief_WeightCargo)");
+            VoiceAttackPlugin.LogOutput("WeightCargo: " + Utils.sbWeightCargo, "blue");
+
+            TriggerCalcCode(Utils.sbPayload + " (>L:SimBrief_Payload)");
+            VoiceAttackPlugin.LogOutput("Payload: " + Utils.sbPayload, "blue");
+
+            TriggerCalcCode(Utils.sbZFW + " (>L:SimBrief_sbZFW)");
+            VoiceAttackPlugin.LogOutput("sbZFW: " + Utils.sbZFW, "blue");
+
+            TriggerCalcCode(Utils.sbTOW + " (>L:SimBrief_sbTOW)");
+            VoiceAttackPlugin.LogOutput("sbTOW: " + Utils.sbTOW, "blue");
+
+
+            VoiceAttackPlugin.LogOutput("SimBrief fetch finished.", "grey");
+
+            return fetchRes;
+
+        }
         #endregion
 
         #region Event Handlers
@@ -1060,8 +1251,6 @@ namespace MSFS
         {
             SIMCONNECT_EXCEPTION ex = (SIMCONNECT_EXCEPTION)data.dwException;
 
-            Console.WriteLine("SimConnect_OnRecvException: " + ex.ToString());
-
 
             // A common exception will be unrecognized data definitions or events
 
@@ -1078,7 +1267,7 @@ namespace MSFS
         /// </summary>
         private void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            Debug.WriteLine("SimConnect_OnRecvOpen");
+
 
             Connected = true;
 
@@ -1089,7 +1278,7 @@ namespace MSFS
         /// </summary>
         private void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            Debug.WriteLine("Sim has exited.");
+
             Disconnect();
         }
 
@@ -1099,7 +1288,7 @@ namespace MSFS
         private void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
 
         {
-            Debug.WriteLine("SimConnect_OnRecvSimobjectDataBytype");
+
 
 
         }
@@ -1123,7 +1312,7 @@ namespace MSFS
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("MessageReceiveThreadHandler failed. Msg:" + ex.Message);
+                    VoiceAttackPlugin.LogOutput("MessageReceiveThreadHandler failed.", "grey");
                 }
             }
         }
@@ -1136,17 +1325,17 @@ namespace MSFS
 
             // ask the sim if it has any messages (data responses)
             _simConnection.ReceiveMessage();
-            Debug.WriteLine("Checked for messages (manually)");
+            VoiceAttackPlugin.LogOutput("Checked for messages (manually).", "grey");
         }
 
         static void ClientStatusHandler(ClientEvent ev)
         {
-            Debug.WriteLine($"Client event {ev.eventType} - \"{ev.message}\"; Client status: {ev.status}", "^^");
+
         }
 
         static void LogHandler(LogRecord lr, LogSource src)
         {
-            Debug.WriteLine($"{src} Log: {lr}", "@@");  // LogRecord has a convenience ToString() override
+
         }
         #endregion
 
@@ -1169,7 +1358,7 @@ namespace MSFS
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to initiate event handlers. Msg:" + ex.Message);
+                VoiceAttackPlugin.LogOutput("Failed to initiate event handlers", "grey");
             }
         }
 
@@ -1208,19 +1397,20 @@ namespace MSFS
 
         static void DataSubscriptionHandler(DataRequestRecord dr)
         {
-            Console.Write($"<< Got Data for request {(Requests)dr.requestId} \"{dr.nameOrCode}\" with Value: ");
+
             // Convert the received data into a value using DataRequestRecord's tryConvert() methods.
             // This could be more efficient in a "real" application, but it's good enough for our tests with only 2 value types.
-            if (dr.tryConvert(out float fVal))
-                Console.WriteLine($"(float) {fVal}");
+            if (dr.tryConvert(out float fVal)) ;
+
             else if (dr.tryConvert(out string sVal))
             {
-                Console.WriteLine($"(string) \"{sVal}\"");
+
             }
-            else
-                Console.WriteLine("Could not convert result data to value!");
+            else;
+
 
         }
 
     }
+
 }
