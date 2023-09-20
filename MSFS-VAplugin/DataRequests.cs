@@ -4,6 +4,7 @@
 // AUTHOR: William Riker
 //================================================================================================================= 
 using System.Runtime.InteropServices;
+using Microsoft.FlightSimulator.SimConnect;
 
 namespace MSFS
 {
@@ -21,19 +22,114 @@ namespace MSFS
     // Identifies the types of data requests we want to make
     public enum RequestTypes
     {
-        PlaneState,
+        SimVar,
     }
-
+    
     // Identifies the different data definitions we've defined
     public enum DataDefinitions
     {
-        PlaneState,
+        SimVar,
+    }
+   
+    public enum FacilityRequestTypes
+    {
+        FacilityData,
     }
 
 
-    // We need data structure for each data request
-    // Note: each string in the data structure needs a MarshalAs statement above it
+    public enum SIMVAR_DEFINITION
+    {
+        Dummy = 0
+    };
+
+    public enum REQUEST_DEFINITON
+    {
+        Dummy = 0,
+        Struct1
+    };
+
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct airport
+    {
+        public double latitude;
+        public System.Int32 arrivals;
+        public System.Int32 nRunways;
+
+    };
+
+    struct runway
+    {
+
+        public float heading;
+        public float length;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+        public string primaryVORICAO;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+        public string primaryVORregion;
+        public int primaryNumber;
+        public int primaryDesignator;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+        public string secondaryVORICAO;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+        public string secondaryVORregion;
+        public int secondaryNumber;
+        public int secondaryDesignator;
+
+    }
+
+    struct vor
+    {
+
+        public double gsAltitude;
+        public int hasGlideSlope;
+        public uint frequency;
+        public int type;
+        public float localizer;
+        public float glide_slope;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+        public string name;
+
+
+    }
+
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct SimVarString
+    {
+
+        public string simvar;
+
+    }
+
+    public struct SimVarBool
+    {
+
+        public bool simvar;
+
+    }
+
+    public struct SimVarDouble
+    {
+
+        public double simvar;
+
+    }
+
+    public struct SimVarFloat
+    {
+
+        public float simvar;
+
+    }
+
+    public struct SimVarInt
+    {
+
+        public int simvar;
+
+    }
+
     public struct PlaneState
     {
         
@@ -148,6 +244,7 @@ namespace MSFS
         public string PMDG_Variable;
     }
 
+
     public enum SimVarList
     {
         //  0=Bool
@@ -168,9 +265,22 @@ namespace MSFS
         //  15=BCO16
         //  16=Feet per second
         //  17=Volts
+        //  18=inHg
+        //  19=Meters
+        //  20=Kilograms
+        //  21=Gallons
+        //  22=Slugs per cubic feet
 
         AIRSPEED_INDICATED = 1,
+        AMBIENT_DENSITY = 22,
+        AMBIENT_IN_CLOUD = 0,
         AMBIENT_TEMPERATURE = 2,
+        AMBIENT_PRECIP_RATE = 19,
+        AMBIENT_PRECIP_STATE = 4,
+        AMBIENT_PRESSURE = 18,
+        AMBIENT_VISIBILITY = 19,
+        AMBIENT_WIND_DIRECTION = 6,
+        AMBIENT_WIND_VELOCITY = 1,
         APU_SWITCH = 0,
         APU_GENERATOR_SWITCH = 0,
         APU_PCT_RPM = 3,
@@ -200,18 +310,25 @@ namespace MSFS
         BLEED_AIR_SOURCE_CONTROL = 9,
         BRAKE_PARKING_INDICATOR = 0,
         CABIN_SEATBELTS_ALERT_SWITCH = 0,
+        CIRCUIT_POWER_SETTING = 3,
         CIRCUIT_SWITCH_ON = 0,
+        CG_PERCENT = 3,
         COM_ACTIVE_FREQUENCY = 13,
         COM_STANDBY_FREQUENCY = 13,
         ELECTRICAL_MAIN_BUS_VOLTAGE = 17,
         ELECTRICAL_MASTER_BATTERY = 0,
+        EXTERNAL_POWER_AVAILABLE = 0,
         EXTERNAL_POWER_ON = 0,
+        EMPTY_WEIGHT = 20,
         ENG_ANTI_ICE = 0,
         ENG_N1_RPM = 11,
         ENG_N2_RPM = 11,
         ENGINE_TYPE = 9,
         FLAPS_HANDLE_INDEX = 4,
         FLAPS_HANDLE_PERCENT = 3,
+        FUELSYSTEM_TANK_QUANTITY = 21,
+        FUEL_TOTAL_QUANTITY_WEIGHT = 20,
+        FUEL_WEIGHT_PER_GALLON = 20,
         FUELSYSTEM_PUMP_SWITCH = 0,
         FUELSYSTEM_VALVE_SWITCH = 0,
         GEAR_HANDLE_POSITION = 0,
@@ -238,18 +355,29 @@ namespace MSFS
         NUMBER_OF_ENGINES = 4,
         PANEL_ANTI_ICE_SWITCH = 0,
         PITOT_HEAT = 0,
+        PITOT_ICE_PCT = 3,
         PLANE_ALT_ABOVE_GROUND = 5,
         PLANE_ALTITUDE = 5,
         PLANE_LATITUDE = 12,
         PLANE_LONGITUDE = 12,
         PROP_DEICE_SWITCH = 0,
         PUSHBACK_STATE = 9,
+        SEA_LEVEL_PRESSURE = 18,
         SIM_ON_GROUND = 0,
+        SPOILERS_ARMED = 0,
         SPOILER_AVAILABLE = 0,
         SPOILERS_HANDLE_POSITION = 14,
         STRUCTURAL_DEICE_SWITCH = 0,
+        STRUCTURAL_ICE_PCT = 3,
+        SURFACE_INFO_VALID = 0,
+        SURFACE_CONDITION = 9,
+        SURFACE_TYPE = 9,
+        TOTAL_AIR_TEMPERATURE = 2,
+        TOTAL_WEIGHT = 20,
         TRANSPONDER_AVAILABLE = 0,
         TRANSPONDER_CODE = 13,
+        TRANSPONDER_STATE = 9,
+        TURB_ENG_IGNITION_SWITCH_EX1 = 9,
         VERTICAL_SPEED = 16,
         WATER_RUDDER_HANDLE_POSITION = 3,
         WINDSHIELD_DEICE_SWITCH = 0,
@@ -262,7 +390,7 @@ namespace MSFS
         public string GiveSimVarUnit(int iD)
         {
 
-            string Unit = "NULL";
+            string Unit = "NULL";                      
             
             switch (iD)
             {
@@ -270,108 +398,184 @@ namespace MSFS
                 case 0:
 
                     Unit = "Bool";
+                    Utils.dataType = SIMCONNECT_DATATYPE.INT32;
+                    Utils.resultDataType = "Bool";
 
                     break;
 
                 case 1:
 
                     Unit = "Knots";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 2:
 
                     Unit = "Celsius";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 3:
 
                     Unit = "Percent Over 100";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT64;
+                    Utils.resultDataType = "Double";
 
                     break;
 
                 case 4:
 
                     Unit = "Number";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT64;
+                    Utils.resultDataType = "Double";
 
                     break;
 
                 case 5:
 
                     Unit = "Feet";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 6:
 
                     Unit = "Degrees";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 7:
 
                     Unit = "Integer";
+                    Utils.dataType = SIMCONNECT_DATATYPE.INT32;
+                    Utils.resultDataType = "Int";
 
                     break;
 
                 case 8:
 
                     Unit = "Feet/Minute";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 9:
 
                     Unit = "Enum";
+                    Utils.dataType = SIMCONNECT_DATATYPE.INT32;
+                    Utils.resultDataType = "Int";
 
                     break;
 
                 case 10:
 
                     Unit = "Frequency BCD16";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT64;
+                    Utils.resultDataType = "Double";
 
                     break;
 
                 case 11:
 
                     Unit = "RPM";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 12:
 
                     Unit = "Radians";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 13:
 
                     Unit = "MHz";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT64;
+                    Utils.resultDataType = "Double";
 
                     break;
 
                 case 14:
 
                     Unit = "Position";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT64;
+                    Utils.resultDataType = "Double";
 
                     break;
 
                 case 15:
 
                     Unit = "BCO16";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
                     
                 case 16:
 
                     Unit = "Feet per second";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 
                 case 17:
 
                     Unit = "Volts";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
+
+                    break;
+
+                case 18:
+
+                    Unit = "inHg";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
+
+                    break;
+
+                case 19:
+
+                    Unit = "Meters";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
+
+                    break;
+
+                case 20:
+
+                    Unit = "Kilograms";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
+
+                    break;
+
+                case 21:
+
+                    Unit = "Gallons";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
+
+                    break;
+
+                case 22:
+
+                    Unit = "Slugs per cubic feet";
+                    Utils.dataType = SIMCONNECT_DATATYPE.FLOAT32;
+                    Utils.resultDataType = "Float";
 
                     break;
 

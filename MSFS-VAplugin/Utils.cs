@@ -4,6 +4,9 @@
 // AUTHOR: William Riker
 //================================================================================================================= 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.FlightSimulator.SimConnect;
 using static MSFS.VoiceAttackPlugin;
 
 namespace MSFS
@@ -19,13 +22,58 @@ namespace MSFS
 
         public static string pilotID = "NULL";
 
-        public static string xmlFile = "NULL";
+        public static string reqICAO = "NULL";
+
+        public static string reqRunway = "NULL";
+
+        public static string reqVORICAO = "NULL";
+
+        public static string reqVORregion = "NULL";
+
+        public static int simConnectMSGLoop = 1;
+
+        public static string simvar = "NULL";
+
+        public static string simvarindex = "NULL";
+
+        public static string simvarunit = "NULL";
+
+        public static SIMCONNECT_DATATYPE dataType = new SIMCONNECT_DATATYPE();
+
+        public static string resultDataString = "NULL";
+
+        public static double resultDataValue = 0;
+
+        public static string resultDataType = "NULL";
+
 
         //SimBrief variables-----------------------------------------------------------------------
 
+        public static int sbWeatherReportCharPos = 0;
+
+        public static int sbWeatherReportCharPos2 = 0;
+
         public static string sbFlight = "NULL";
 
+        public static string sbAirlineICAO = "NULL";
+
+        public static string sbCallsign = "NULL";
+
+        public static string sbCruiseProf = "NULL";
+
+        public static string sbClimbProf = "NULL";
+
+        public static string sbDescentProf = "NULL";
+
         public static int sbCostIndex = 0;
+
+        public static int sbInitialAlt = 0;
+
+        public static int sbAvgWindDir = 0;
+
+        public static int sbAvgWindSpd = 0;
+
+        public static double sbTopClimbOAT = 0;
 
         public static string sbRoute = "NULL";
 
@@ -39,15 +87,21 @@ namespace MSFS
 
         public static int sbOriginTransLevel = 0;
 
-        public static int sbOriginWindDir = 0;
+        public static int sbOriginAvailWeather = 0;
 
-        public static int sbOriginWindSpd = 0;
+        public static string sbOriginWind = "NULL";
 
         public static string sbOriginMetar = "NULL";
 
-        public static int sbOriginQNH = 0;
+        public static string sbOriginMetarTime = "NULL";
 
-        public static double sbOriginBaro = 0;
+        public static string sbOriginTAF = "NULL";
+
+        public static string sbOriginTAFTime = "NULL";
+
+        public static string sbOriginPressure = "NULL";
+
+        public static string sbOriginTemp = "NULL";
 
         public static string sbAltn = "NULL";
 
@@ -59,15 +113,21 @@ namespace MSFS
 
         public static int sbAltnTransLevel = 0;
 
+        public static int sbAltnAvailWeather = 0;
+
         public static string sbAltnMetar = "NULL";
 
-        public static int sbAltnWindDir = 0;
+        public static string sbAltnMetarTime = "NULL";
 
-        public static int sbAltnWindSpd = 0;
+        public static string sbAltnTAF = "NULL";
 
-        public static int sbAltnQNH = 0;
+        public static string sbAltnTAFTime = "NULL";
 
-        public static double sbAltnBaro = 0;
+        public static string sbAltnWind = "NULL";
+
+        public static string sbAltnPressure = "NULL";
+
+        public static string sbAltnTemp = "NULL";
 
         public static string sbDestination = "NULL";
 
@@ -79,15 +139,21 @@ namespace MSFS
 
         public static int sbDestTransLevel = 0;
 
+        public static int sbDestAvailWeather = 0;
+
         public static string sbDestMetar = "NULL";
 
-        public static int sbDestWindDir = 0;
+        public static string sbDestMetarTime = "NULL";
 
-        public static int sbDestWindSpd = 0;
+        public static string sbDestTAF = "NULL";
 
-        public static int sbDestQNH = 0;
+        public static string sbDestTAFTime = "NULL";
 
-        public static double sbDestBaro = 0;
+        public static string sbDestWind = "NULL";
+
+        public static string sbDestPressure = "NULL";
+
+        public static string sbDestTemp = "NULL";
 
         public static string sbUnits = "NULL";
 
@@ -114,12 +180,123 @@ namespace MSFS
         public static double sbTOW = 0;
 
 
+        //-----------------------------------------------------------------------------------------
+
+        public static float scHeading1 = 0;
+        public static float scLength1 = 0;
+        public static int scPrimNumb1 = 0;
+        public static int scPrimDesign1 = 0;
+        public static string scPrimVORICAO1 = "NULL";
+        public static string scPrimVORregion1 = "NULL";
+        public static int scSecNumb1 = 0;
+        public static int scSecDesign1 = 0;
+        public static string scSecVORICAO1 = "NULL";
+        public static string scSecVORregion1 = "NULL";
+        public static float scHeading2 = 0;
+        public static float scLength2 = 0;
+        public static int scPrimNumb2 = 0;
+        public static int scPrimDesign2 = 0;
+        public static string scPrimVORICAO2 = "NULL";
+        public static string scPrimVORregion2 = "NULL";
+        public static int scSecNumb2 = 0;
+        public static int scSecDesign2 = 0;
+        public static string scSecVORICAO2 = "NULL";
+        public static string scSecVORregion2 = "NULL";
+        public static float scHeading3 = 0;
+        public static float scLength3 = 0;
+        public static int scPrimNumb3 = 0;
+        public static int scPrimDesign3 = 0;
+        public static string scPrimVORICAO3 = "NULL";
+        public static string scPrimVORregion3 = "NULL";
+        public static int scSecNumb3 = 0;
+        public static int scSecDesign3 = 0;
+        public static string scSecVORICAO3 = "NULL";
+        public static string scSecVORregion3 = "NULL";
+        public static float scHeading4 = 0;
+        public static float scLength4 = 0;
+        public static int scPrimNumb4 = 0;
+        public static int scPrimDesign4 = 0;
+        public static string scPrimVORICAO4 = "NULL";
+        public static string scPrimVORregion4 = "NULL";
+        public static int scSecNumb4 = 0;
+        public static int scSecDesign4 = 0;
+        public static string scSecVORICAO4 = "NULL";
+        public static string scSecVORregion4 = "NULL";
+        public static float scHeading5 = 0;
+        public static float scLength5 = 0;
+        public static int scPrimNumb5 = 0;
+        public static int scPrimDesign5 = 0;
+        public static string scPrimVORICAO5 = "NULL";
+        public static string scPrimVORregion5 = "NULL";
+        public static int scSecNumb5 = 0;
+        public static int scSecDesign5 = 0;
+        public static string scSecVORICAO5 = "NULL";
+        public static string scSecVORregion5 = "NULL";
+        public static float scHeading6 = 0;
+        public static float scLength6 = 0;
+        public static int scPrimNumb6 = 0;
+        public static int scPrimDesign6 = 0;
+        public static string scPrimVORICAO6 = "NULL";
+        public static string scPrimVORregion6 = "NULL";
+        public static int scSecNumb6 = 0;
+        public static int scSecDesign6 = 0;
+        public static string scSecVORICAO6 = "NULL";
+        public static string scSecVORregion6 = "NULL";
+        public static float scHeading7 = 0;
+        public static float scLength7 = 0;
+        public static int scPrimNumb7 = 0;
+        public static int scPrimDesign7 = 0;
+        public static string scPrimVORICAO7 = "NULL";
+        public static string scPrimVORregion7 = "NULL";
+        public static int scSecNumb7 = 0;
+        public static int scSecDesign7 = 0;
+        public static string scSecVORICAO7 = "NULL";
+        public static string scSecVORregion7 = "NULL";
+        public static float scHeading8 = 0;
+        public static float scLength8 = 0;
+        public static int scPrimNumb8 = 0;
+        public static int scPrimDesign8 = 0;
+        public static string scPrimVORICAO8 = "NULL";
+        public static string scPrimVORregion8 = "NULL";
+        public static int scSecNumb8 = 0;
+        public static int scSecDesign8 = 0;
+        public static string scSecVORICAO8 = "NULL";
+        public static string scSecVORregion8 = "NULL";
+
+
+        public static float scLocFreq = 0;
+        public static float scLocHeading = 0;
+        public static string scLocName = "NULL";
 
         //-----------------------------------------------------------------------------------------
 
         public static bool errcon = false;
 
 
+        public static void SetCallsign()
+        {
+            sbCallsign = sbAirlineICAO + sbFlight;
+
+            sbCallsign = ConvertToRadiophonic(sbCallsign);
+        }
+
+        public static string ConvertToRadiophonic(string toRadiophonic) 
+        
+        {
+            toRadiophonic = toRadiophonic.ToUpper(); // Convert input to uppercase for consistent matching
+            string converted = "";
+
+            foreach (char c in toRadiophonic)
+            {
+                if (phoneticAlphabet.ContainsKey(c))
+                    converted += phoneticAlphabet[c] + " ";
+                else
+                    converted += c + " "; // Use the original character if not found in the alphabet
+            }
+
+            return converted.Trim(); // Remove trailing space
+        }
+        
 
         public static void SetKeyName(string KeyName)
         {
@@ -155,6 +332,38 @@ namespace MSFS
             
             return Result; 
         }
+
+        static Dictionary<char, string> phoneticAlphabet = new Dictionary<char, string>
+    {
+        { 'A', "Alpha" },
+        { 'B', "Bravo" },
+        { 'C', "Charlie" },
+        { 'D', "Delta" },
+        { 'E', "Echo" },
+        { 'F', "Foxtrot" },
+        { 'G', "Golf" },
+        { 'H', "Hotel" },
+        { 'I', "India" },
+        { 'J', "Juliett" },
+        { 'K', "Kilo" },
+        { 'L', "Lima" },
+        { 'M', "Mike" },
+        { 'N', "November" },
+        { 'O', "Oscar" },
+        { 'P', "Papa" },
+        { 'Q', "Quebec" },
+        { 'R', "Romeo" },
+        { 'S', "Sierra" },
+        { 'T', "Tango" },
+        { 'U', "Uniform" },
+        { 'V', "Victor" },
+        { 'W', "Whiskey" },
+        { 'X', "X-ray" },
+        { 'Y', "Yankee" },
+        { 'Z', "Zulu" },
+        { '9', "Niner" }
+
+    };
 
     }
 }
