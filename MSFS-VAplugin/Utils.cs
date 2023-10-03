@@ -182,8 +182,15 @@ namespace MSFS
 
         //-----------------------------------------------------------------------------------------
 
+        public static double scLatitude = 0;
+        public static double scLongitude = 0;
+        public static double scAltitude = 0;
+
+        public static float scAltitude1 = 0;
         public static float scHeading1 = 0;
         public static float scLength1 = 0;
+        public static float scSlope1 = 0;
+        public static float scTrueSlope1 = 0;
         public static int scPrimNumb1 = 0;
         public static int scPrimDesign1 = 0;
         public static string scPrimVORICAO1 = "NULL";
@@ -192,8 +199,11 @@ namespace MSFS
         public static int scSecDesign1 = 0;
         public static string scSecVORICAO1 = "NULL";
         public static string scSecVORregion1 = "NULL";
+        public static float scAltitude2 = 0;
         public static float scHeading2 = 0;
         public static float scLength2 = 0;
+        public static float scSlope2 = 0;
+        public static float scTrueSlope2 = 0;
         public static int scPrimNumb2 = 0;
         public static int scPrimDesign2 = 0;
         public static string scPrimVORICAO2 = "NULL";
@@ -202,8 +212,11 @@ namespace MSFS
         public static int scSecDesign2 = 0;
         public static string scSecVORICAO2 = "NULL";
         public static string scSecVORregion2 = "NULL";
+        public static float scAltitude3 = 0;
         public static float scHeading3 = 0;
         public static float scLength3 = 0;
+        public static float scSlope3 = 0;
+        public static float scTrueSlope3 = 0;
         public static int scPrimNumb3 = 0;
         public static int scPrimDesign3 = 0;
         public static string scPrimVORICAO3 = "NULL";
@@ -212,8 +225,11 @@ namespace MSFS
         public static int scSecDesign3 = 0;
         public static string scSecVORICAO3 = "NULL";
         public static string scSecVORregion3 = "NULL";
+        public static float scAltitude4 = 0;
         public static float scHeading4 = 0;
         public static float scLength4 = 0;
+        public static float scSlope4 = 0;
+        public static float scTrueSlope4 = 0;
         public static int scPrimNumb4 = 0;
         public static int scPrimDesign4 = 0;
         public static string scPrimVORICAO4 = "NULL";
@@ -222,8 +238,11 @@ namespace MSFS
         public static int scSecDesign4 = 0;
         public static string scSecVORICAO4 = "NULL";
         public static string scSecVORregion4 = "NULL";
+        public static float scAltitude5 = 0;
         public static float scHeading5 = 0;
         public static float scLength5 = 0;
+        public static float scSlope5 = 0;
+        public static float scTrueSlope5 = 0;
         public static int scPrimNumb5 = 0;
         public static int scPrimDesign5 = 0;
         public static string scPrimVORICAO5 = "NULL";
@@ -232,8 +251,11 @@ namespace MSFS
         public static int scSecDesign5 = 0;
         public static string scSecVORICAO5 = "NULL";
         public static string scSecVORregion5 = "NULL";
+        public static float scAltitude6 = 0;
         public static float scHeading6 = 0;
         public static float scLength6 = 0;
+        public static float scSlope6 = 0;
+        public static float scTrueSlope6 = 0;
         public static int scPrimNumb6 = 0;
         public static int scPrimDesign6 = 0;
         public static string scPrimVORICAO6 = "NULL";
@@ -242,8 +264,11 @@ namespace MSFS
         public static int scSecDesign6 = 0;
         public static string scSecVORICAO6 = "NULL";
         public static string scSecVORregion6 = "NULL";
+        public static float scAltitude7 = 0;
         public static float scHeading7 = 0;
         public static float scLength7 = 0;
+        public static float scSlope7 = 0;
+        public static float scTrueSlope7 = 0;
         public static int scPrimNumb7 = 0;
         public static int scPrimDesign7 = 0;
         public static string scPrimVORICAO7 = "NULL";
@@ -252,8 +277,11 @@ namespace MSFS
         public static int scSecDesign7 = 0;
         public static string scSecVORICAO7 = "NULL";
         public static string scSecVORregion7 = "NULL";
+        public static float scAltitude8 = 0;
         public static float scHeading8 = 0;
         public static float scLength8 = 0;
+        public static float scSlope8 = 0;
+        public static float scTrueSlope8 = 0;
         public static int scPrimNumb8 = 0;
         public static int scPrimDesign8 = 0;
         public static string scPrimVORICAO8 = "NULL";

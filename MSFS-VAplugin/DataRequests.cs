@@ -53,6 +53,8 @@ namespace MSFS
     struct airport
     {
         public double latitude;
+        public double longitude;
+        public double altitude;
         public System.Int32 arrivals;
         public System.Int32 nRunways;
 
@@ -60,9 +62,10 @@ namespace MSFS
 
     struct runway
     {
-
         public float heading;
         public float length;
+        public float slope;
+        public float trueslope;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
         public string primaryVORICAO;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]

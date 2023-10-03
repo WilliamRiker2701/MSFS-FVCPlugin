@@ -19,6 +19,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Concurrent;
 using FSUIPC;
 using System.Configuration;
+using System.Globalization;
 
 namespace MSFS
 {
@@ -40,7 +41,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.1";
+            return "MSFS-FVCplugin - v1.3";
         }
 
         /// <summary>
@@ -76,7 +77,12 @@ namespace MSFS
 
             // uncomment this line to force the debugger to attach at the very start of the class being created
             //System.Diagnostics.Debugger.Launch();
+
+
+
             VA = vaProxy;
+
+
 
 
         }
@@ -94,6 +100,11 @@ namespace MSFS
         /// </summary>
         public static void VA_Invoke1(dynamic vaProxy)
         {
+
+            CultureInfo invariantCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentCulture = invariantCulture;
+            Thread.CurrentThread.CurrentUICulture = invariantCulture;
+
             string context;
             string targetVar;
             string eventData;
@@ -1037,6 +1048,15 @@ namespace MSFS
 
                     msfsCommander = ConnectToWASM2(vaProxy);
 
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM2(vaProxy);
+
+                    }
+
                     if (msfsCommander == null) return;
 
                     if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing SimConnect Facility Data request...", LOG_INFO);
@@ -1051,12 +1071,23 @@ namespace MSFS
 
                     msfsCommander.WASMDisconnect();
 
+                    Thread.Sleep(100);
+
                     break;
 
                 case "SBF":
 
 
                     msfsCommander = ConnectToWASM2(vaProxy);
+
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM2(vaProxy);
+
+                    }
 
                     if (msfsCommander == null) return;
 
@@ -1076,6 +1107,8 @@ namespace MSFS
 
 
                     msfsCommander.WASMDisconnect();
+
+                    Thread.Sleep(100);
 
 
                     break;
@@ -1238,13 +1271,13 @@ namespace MSFS
 
                     if (reqRunway.Substring(0, 1) == "0")
                     {
-                        reqRunway = reqRunway.Remove(0, 1);                       
+                        reqRunway = reqRunway.Remove(0, 1);
                     }
                         
                     Utils.reqRunway = reqRunway;
                     Utils.simConnectMSGLoop = 1;
 
-                    if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Facility RUNWAY data requested from " + Utils.reqICAO + " " + Utils.reqRunway, LOG_INFO);
+                    if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Facility RUNWAY data requested from " + Utils.reqICAO + " " + Utils.reqRunway + ".", LOG_INFO);
 
                     msfsCommander.FacilityRequest();
 

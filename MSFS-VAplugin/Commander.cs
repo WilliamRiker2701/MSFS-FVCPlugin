@@ -508,6 +508,8 @@ namespace MSFS
                 _waSimConnection.disconnectServer();
                 _waSimConnection.disconnectSimulator();
 
+                //_waSimConnection.Dispose();
+
                 for (int i = 0; i < 10 && _waSimConnection.isConnected() == true; i++)
                 {
                     VoiceAttackPlugin.LogOutput("WASM disconnecting...", "grey");
@@ -524,11 +526,6 @@ namespace MSFS
                     VoiceAttackPlugin.LogOutput("Connection to WASM successfully closed.", "grey");
                 }
 
-                // delete the client
-
-                _waSimConnection.Dispose();
-                
-                Thread.Sleep(200);
             }
             catch (Exception e)
             {
@@ -1189,6 +1186,10 @@ namespace MSFS
 
             float util;
 
+            string utilS;
+
+            double utilD;
+
             string pdesignator;
 
             string sdesignator;
@@ -1212,6 +1213,18 @@ namespace MSFS
 
                         try
                         {
+                            lvardesignation = VoiceAttackPlugin.GetText("MSFS.LvarRunwayDes");
+                            VoiceAttackPlugin.LogOutput("LVar designator: " + lvardesignation, "grey");
+
+                            TriggerCalcCode(Utils.scLatitude + " (>L:SimConnect_" + lvardesignation + "Latitude)");
+                            VoiceAttackPlugin.LogOutput(lvardesignation + " airport latitude: " + Utils.scLatitude, "blue");
+
+                            TriggerCalcCode(Utils.scLongitude + " (>L:SimConnect_" + lvardesignation + "Longitude)");
+                            VoiceAttackPlugin.LogOutput(lvardesignation + " airport longitude: " + Utils.scLongitude, "blue");
+
+                            TriggerCalcCode(Utils.scAltitude + " (>L:SimConnect_" + lvardesignation + "Altitude)");
+                            VoiceAttackPlugin.LogOutput(lvardesignation + " airport altitude: " + Utils.scAltitude, "blue");
+
 
                         }
                         catch (Exception ex)
@@ -1339,6 +1352,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading1 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading1, "blue");
 
+                                TriggerCalcCode(Utils.scSlope1 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope1, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope1 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope1, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO1);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion1);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO1 + " region: " + Utils.scPrimVORregion1, "grey");
@@ -1368,6 +1408,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope1 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope1 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO1);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion1);
@@ -1460,6 +1531,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading2 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading2, "blue");
 
+                                TriggerCalcCode(Utils.scSlope2 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope2, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope2 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope2, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO2);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion2);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO2 + " region: " + Utils.scPrimVORregion2, "grey");
@@ -1487,6 +1585,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope2 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope2 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO2);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion2);
@@ -1580,6 +1709,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading3 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading3, "blue");
 
+                                TriggerCalcCode(Utils.scSlope3 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope3, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope3 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope3, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO3);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion3);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO3 + " region: " + Utils.scPrimVORregion3, "grey");
@@ -1607,6 +1763,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope3 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope3 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO3);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion3);
@@ -1699,6 +1886,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading4 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading4, "blue");
 
+                                TriggerCalcCode(Utils.scSlope4 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope4, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope4 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope4, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO4);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion4);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO4 + " region: " + Utils.scPrimVORregion4, "grey");
@@ -1727,6 +1941,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope4 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope4 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO4);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion4);
@@ -1819,6 +2064,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading5 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading5, "blue");
 
+                                TriggerCalcCode(Utils.scSlope5 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope5, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope5 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope5, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO5);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion5);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO5 + " region: " + Utils.scPrimVORregion5, "grey");
@@ -1847,6 +2119,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope5 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope5 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO5);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion5);
@@ -1939,6 +2242,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading6 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading6, "blue");
 
+                                TriggerCalcCode(Utils.scSlope6 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope6, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope6 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope6, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO6);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion6);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO6 + " region: " + Utils.scPrimVORregion6, "grey");
@@ -1967,6 +2297,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope6 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope6 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO6);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion6);
@@ -2059,6 +2420,33 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading7 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading7, "blue");
 
+                                TriggerCalcCode(Utils.scSlope7 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope7, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope7 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope7, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO7);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion7);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO7 + " region: " + Utils.scPrimVORregion7, "grey");
@@ -2087,6 +2475,37 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope7 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope7 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO7);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion7);
@@ -2179,9 +2598,39 @@ namespace MSFS
                                 TriggerCalcCode(Utils.scHeading8 + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + adesignation + " heading: " + Utils.scHeading8, "blue");
 
+                                TriggerCalcCode(Utils.scSlope8 + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + Utils.scSlope8, "blue");
+
+                                TriggerCalcCode(Utils.scTrueSlope8 + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + Utils.scTrueSlope8, "blue");
+
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
+
+
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scPrimVORICAO8);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scPrimVORregion8);
                                 VoiceAttackPlugin.LogOutput("Saved VA variable VOR ICAO: " + Utils.scPrimVORICAO8 + " region: " + Utils.scPrimVORregion8, "grey");
+
+
 
                             }
 
@@ -2207,6 +2656,36 @@ namespace MSFS
 
                                 TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Heading)");
                                 VoiceAttackPlugin.LogOutput("Runway " + bdesignation + " heading: " + util, "blue");
+
+                                util = Utils.scSlope8 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "Slope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " slope: " + util, "blue");
+
+                                util = Utils.scTrueSlope8 * -1;
+
+                                TriggerCalcCode(util + " (>L:SimConnect_" + lvardesignation + "TrueSlope)");
+                                VoiceAttackPlugin.LogOutput("Runway " + adesignation + " true slope: " + util, "blue");
+
+
+                                Thread.Sleep(50);
+
+                                utilS = "SimConnect_" + lvardesignation + "Length";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Heading";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "Slope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
+
+                                utilS = "SimConnect_" + lvardesignation + "TrueSlope";
+                                utilD = GetLVarFSUIPC(utilS);
+                                VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
+
 
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORICAO", Utils.scSecVORICAO8);
                                 VoiceAttackPlugin.SetText("MSFS.FacilityReqVORregion", Utils.scSecVORregion8);
@@ -2234,11 +2713,34 @@ namespace MSFS
                             VoiceAttackPlugin.LogOutput("Localizer Frequency: " + Utils.scLocFreq + "MHz", "blue");
                             VoiceAttackPlugin.SetText("MSFS." + lvardesignation + "_LOC_FREQ", Utils.scLocFreq.ToString());
 
+
                             TriggerCalcCode(Utils.scLocHeading + " (>L:SimConnect_" + lvardesignation + "LOCheading)");
                             VoiceAttackPlugin.LogOutput("Localizer Heading: " + Utils.scLocHeading, "blue");
                             VoiceAttackPlugin.SetText("MSFS." + lvardesignation + "_LOC_HEAD", Utils.scLocHeading.ToString());
 
                             VoiceAttackPlugin.SetText("MSFS." + lvardesignation + "_LOC_NAME", Utils.scLocName);
+
+                            Thread.Sleep(50);
+
+                            utilS = VoiceAttackPlugin.GetText("MSFS." + lvardesignation + "_LOC_FREQ");
+                            VoiceAttackPlugin.LogOutput("Localizer Freq VA variable: " + utilS, "grey");
+
+                            utilS = "SimConnect_" + lvardesignation + "LOCfreq";
+                            utilD = GetLVarFSUIPC(utilS);
+                            VoiceAttackPlugin.LogOutput("Localizer Freq L variable: " + utilD, "grey");
+
+                            utilS = VoiceAttackPlugin.GetText("MSFS." + lvardesignation + "_LOC_HEAD");
+                            VoiceAttackPlugin.LogOutput("Localizer Head VA variable: " + utilS, "grey");
+
+                            utilS = "SimConnect_" + lvardesignation + "LOCheading";
+                            utilD = GetLVarFSUIPC(utilS);
+                            VoiceAttackPlugin.LogOutput("Localizer Head L variable: " + utilD, "grey");
+
+                            utilS = VoiceAttackPlugin.GetText("MSFS." + lvardesignation + "_LOC_NAME");
+                            VoiceAttackPlugin.LogOutput("Localizer Name VA variable: " + utilS, "grey");
+
+
+
                         }
                         catch (Exception ex)
                         {
@@ -2513,11 +3015,13 @@ namespace MSFS
 
                     while (isLastMessageReceived == false && count <= 10)
                     {
-                        count ++;
+                        VoiceAttackPlugin.LogOutput("Waiting message", "grey");
 
-                        System.Threading.Thread.Sleep(100);
+                        count ++;
                         
                         _simConnection.ReceiveMessage();
+
+                        Thread.Sleep(100);
 
                     }
 
@@ -2959,6 +3463,8 @@ namespace MSFS
                     _simConnection.AddToFacilityDefinition(sd, "OPEN AIRPORT");
 
                     _simConnection.AddToFacilityDefinition(sd, "LATITUDE");
+                    _simConnection.AddToFacilityDefinition(sd, "LONGITUDE");
+                    _simConnection.AddToFacilityDefinition(sd, "ALTITUDE");
                     _simConnection.AddToFacilityDefinition(sd, "N_ARRIVALS");
                     _simConnection.AddToFacilityDefinition(sd, "N_RUNWAYS");
 
@@ -2966,7 +3472,7 @@ namespace MSFS
                     _simConnection.AddToFacilityDefinition(sd, "CLOSE AIRPORT");
 
                     _simConnection.RegisterFacilityDataDefineStruct<airport>(SIMCONNECT_FACILITY_DATA_TYPE.AIRPORT);
-                    _simConnection.RequestFacilityData(sd, rd, "SCEL", "");
+                    _simConnection.RequestFacilityData(sd, rd, Utils.reqICAO, "");
 
                     break;
 
@@ -2976,9 +3482,10 @@ namespace MSFS
 
                     _simConnection.AddToFacilityDefinition(sd, "OPEN AIRPORT");
                     _simConnection.AddToFacilityDefinition(sd, "OPEN RUNWAY");
-
                     _simConnection.AddToFacilityDefinition(sd, "HEADING");
                     _simConnection.AddToFacilityDefinition(sd, "LENGTH");
+                    _simConnection.AddToFacilityDefinition(sd, "SLOPE");
+                    _simConnection.AddToFacilityDefinition(sd, "TRUE_SLOPE");
                     _simConnection.AddToFacilityDefinition(sd, "PRIMARY_ILS_ICAO");
                     _simConnection.AddToFacilityDefinition(sd, "PRIMARY_ILS_REGION");
                     _simConnection.AddToFacilityDefinition(sd, "PRIMARY_NUMBER");
@@ -2987,6 +3494,7 @@ namespace MSFS
                     _simConnection.AddToFacilityDefinition(sd, "SECONDARY_ILS_REGION");
                     _simConnection.AddToFacilityDefinition(sd, "SECONDARY_NUMBER");
                     _simConnection.AddToFacilityDefinition(sd, "SECONDARY_DESIGNATOR");
+                    
 
 
                     _simConnection.AddToFacilityDefinition(sd, "CLOSE RUNWAY");
@@ -3170,8 +3678,14 @@ namespace MSFS
                                 airport a = (airport)data.Data[0];
 
                                 VoiceAttackPlugin.LogOutput("latitude: " + a.latitude, "grey");
+                                VoiceAttackPlugin.LogOutput("longitude: " + a.longitude, "grey");
+                                VoiceAttackPlugin.LogOutput("altitude: " + a.altitude, "grey");
                                 VoiceAttackPlugin.LogOutput("arrivals: " + a.arrivals, "grey");
                                 VoiceAttackPlugin.LogOutput("nRunways: " + a.nRunways, "grey");
+
+                                Utils.scLatitude = a.latitude;
+                                Utils.scLongitude = a.longitude;
+                                Utils.scAltitude = a.altitude;
 
                                 isLastMessageReceived = true;
 
@@ -3240,6 +3754,8 @@ namespace MSFS
 
                                         Utils.scHeading1 = a.heading;
                                         Utils.scLength1 = a.length;
+                                        Utils.scSlope1 = a.slope;
+                                        Utils.scTrueSlope1 = a.trueslope;
                                         Utils.scPrimNumb1 = a.primaryNumber;
                                         Utils.scPrimDesign1 = a.primaryDesignator;
                                         Utils.scSecNumb1 = a.secondaryNumber;
@@ -3267,6 +3783,8 @@ namespace MSFS
 
                                         Utils.scHeading2 = a.heading;
                                         Utils.scLength2 = a.length;
+                                        Utils.scLength2 = a.length;
+                                        Utils.scSlope2 = a.slope;
                                         Utils.scPrimNumb2 = a.primaryNumber;
                                         Utils.scPrimDesign2 = a.primaryDesignator;
                                         Utils.scSecNumb2 = a.secondaryNumber;
@@ -3294,6 +3812,8 @@ namespace MSFS
 
                                         Utils.scHeading3 = a.heading;
                                         Utils.scLength3 = a.length;
+                                        Utils.scLength3 = a.length;
+                                        Utils.scSlope3 = a.slope;
                                         Utils.scPrimNumb3 = a.primaryNumber;
                                         Utils.scPrimDesign3 = a.primaryDesignator;
                                         Utils.scSecNumb3 = a.secondaryNumber;
@@ -3320,6 +3840,8 @@ namespace MSFS
 
                                         Utils.scHeading4 = a.heading;
                                         Utils.scLength4 = a.length;
+                                        Utils.scLength4 = a.length;
+                                        Utils.scSlope4 = a.slope;
                                         Utils.scPrimNumb4 = a.primaryNumber;
                                         Utils.scPrimDesign4 = a.primaryDesignator;
                                         Utils.scSecNumb4 = a.secondaryNumber;
@@ -3346,6 +3868,8 @@ namespace MSFS
 
                                         Utils.scHeading5 = a.heading;
                                         Utils.scLength5 = a.length;
+                                        Utils.scLength5 = a.length;
+                                        Utils.scSlope5 = a.slope;
                                         Utils.scPrimNumb5 = a.primaryNumber;
                                         Utils.scPrimDesign5 = a.primaryDesignator;
                                         Utils.scSecNumb5 = a.secondaryNumber;
@@ -3372,6 +3896,8 @@ namespace MSFS
 
                                         Utils.scHeading6 = a.heading;
                                         Utils.scLength6 = a.length;
+                                        Utils.scLength6 = a.length;
+                                        Utils.scSlope6 = a.slope;
                                         Utils.scPrimNumb6 = a.primaryNumber;
                                         Utils.scPrimDesign6 = a.primaryDesignator;
                                         Utils.scSecNumb6 = a.secondaryNumber;
@@ -3398,6 +3924,8 @@ namespace MSFS
 
                                         Utils.scHeading7 = a.heading;
                                         Utils.scLength7 = a.length;
+                                        Utils.scLength7 = a.length;
+                                        Utils.scSlope7 = a.slope;
                                         Utils.scPrimNumb7 = a.primaryNumber;
                                         Utils.scPrimDesign7 = a.primaryDesignator;
                                         Utils.scSecNumb7 = a.secondaryNumber;
@@ -3424,6 +3952,8 @@ namespace MSFS
 
                                         Utils.scHeading8 = a.heading;
                                         Utils.scLength8 = a.length;
+                                        Utils.scLength8 = a.length;
+                                        Utils.scSlope8 = a.slope;
                                         Utils.scPrimNumb8 = a.primaryNumber;
                                         Utils.scPrimDesign8 = a.primaryDesignator;
                                         Utils.scSecNumb8 = a.secondaryNumber;
@@ -3783,6 +4313,7 @@ namespace MSFS
             REQUEST_ID_1_FLOAT,
             REQUEST_ID_2_STR
         }
+
 
         static void DataSubscriptionHandler(DataRequestRecord dr)
         {
