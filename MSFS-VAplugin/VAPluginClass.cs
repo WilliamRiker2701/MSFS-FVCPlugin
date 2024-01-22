@@ -6,7 +6,7 @@
 
 using System;
 using System.Threading;
-
+using System.IO;
 using System.Diagnostics;
 using WASimCommander.CLI.Enums;
 using WASimCommander.CLI.Structs;
@@ -20,6 +20,9 @@ using System.Collections.Concurrent;
 using FSUIPC;
 using System.Configuration;
 using System.Globalization;
+using Fleck;
+using System.Net.Sockets;
+using System.Collections.Generic;
 
 namespace MSFS
 {
@@ -31,9 +34,9 @@ namespace MSFS
         const string LOG_ERROR = "red";
         const string LOG_INFO = "grey";
         private static dynamic VA;
-
+        private static WebSocketServer webSocketServer;
         public string reqType = "NULL";
-
+        private static IWebSocketConnection webSocketClient;
 
 
         /// <summary>
@@ -78,13 +81,39 @@ namespace MSFS
             // uncomment this line to force the debugger to attach at the very start of the class being created
             //System.Diagnostics.Debugger.Launch();
 
-
+            File.Delete("C:\\FVCVAlog.txt");
 
             VA = vaProxy;
 
+            VA.LogEntryAdded += new Action<DateTime, String, String>(SaveLogEntry);
+
+            webSocketServer = new WebSocketServer("ws://127.0.0.1:49152");
+
+            // Start the server
+
+            webSocketServer.Start(socket =>
+            {
+                // Handle the WebSocket connection
+                socket.OnOpen = () =>
+                {
+                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel opened", LOG_NORMAL);
+                    webSocketClient = socket;
+                };
+
+                socket.OnClose = () =>
+                {
+                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel closed", LOG_NORMAL);
+                    if (webSocketClient == socket)
+                    {
+                        webSocketClient = null;
+                    }
+                };
 
 
+            });
 
+
+            if (DebugMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket message: " + Utils.webSocketColor + " " + Utils.webSocketMessage, LOG_NORMAL);
         }
 
         /// <summary>
@@ -92,7 +121,7 @@ namespace MSFS
         /// </summary>
         public static void VA_Exit1(dynamic vaProxy)
         {
-            // no clean up needed
+            StopWebSocketServer();
         }
 
         /// <summary>
@@ -104,6 +133,8 @@ namespace MSFS
             CultureInfo invariantCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentCulture = invariantCulture;
             Thread.CurrentThread.CurrentUICulture = invariantCulture;
+
+
 
             string context;
             string targetVar;
@@ -227,6 +258,12 @@ namespace MSFS
 
                 varKind = "A";
 
+                if (context.Substring(context.Length - 3) == "SUB")
+                {
+                    outputVar = 3;
+                    varAction = "Norm";
+
+                }
                 if (context.Substring(context.Length - 2) == "-A")
                 {
                     outputVar = 1;
@@ -281,6 +318,27 @@ namespace MSFS
             {
 
                 varKind = "SBF";
+
+            }
+
+            else if (context == "Compact")
+            {
+
+                varKind = "Compact";
+
+            }
+
+            else if (context == "ServerStart")
+            {
+
+                varKind = "serverstart";
+
+            }
+
+            else if (context == "ServerStop")
+            {
+
+                varKind = "serverstop";
 
             }
 
@@ -925,10 +983,17 @@ namespace MSFS
 
                                 case 1:
                                     context = context.Remove(context.Length - 2);
+                                    Utils.simVarSubscription = false;
                                     break;
 
                                 case 2:
                                     context = context.Remove(context.Length - 3);
+                                    Utils.simVarSubscription = false;
+                                    break;
+
+                                case 3:
+                                    context = context.Remove(context.Length - 4);
+                                    Utils.simVarSubscription = true;
                                     break;
                             }
 
@@ -1094,7 +1159,7 @@ namespace MSFS
                     if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing SimBrief request...", LOG_INFO);
 
                     new ApplicationConfigurationReader().Read();
-                    var simbriefURL = ConfigurationConst.Configs["SBURL"].Value;
+                    string simbriefURL = "https://www.simbrief.com/api/xml.fetcher.php?userid={0}";
                     var pilotID = ConfigurationConst.Configs["pilotID"].Value;
 
                     Utils.simbriefURL = simbriefURL;
@@ -1112,6 +1177,49 @@ namespace MSFS
 
 
                     break;
+
+                case "Compact":
+
+                    if (vaProxy.GetBoolean("SetCompact") == true)
+                    {
+                        if (vaProxy.CompactModeEnabled == false)
+                        {
+                            vaProxy.ToggleCompactMode();
+                            vaProxy.WriteToLog("Compact mode on", "black");
+                        }
+                        else
+                        {
+                            vaProxy.WriteToLog("Compact mode already on", "black");
+                        }
+                    }
+                    else
+                    {
+                        if (vaProxy.CompactModeEnabled == true)
+                        {
+                            vaProxy.ToggleCompactMode();
+                            vaProxy.WriteToLog("Compact mode off", "black");
+                        }
+                        else
+                        {
+                            vaProxy.WriteToLog("Compact mode already off", "black");
+                        }
+                    }
+                    
+
+                    break;
+
+                case "serverstart":
+
+                    StartWebSocketServer();
+
+                    break;
+
+                case "serverstop":
+
+                    StopWebSocketServer();
+
+                    break;
+
 
                 case "setappSetting":
 
@@ -1250,6 +1358,8 @@ namespace MSFS
 
             msfsCommander.DefineRequestType(type);
 
+
+
             string reqRunway;
 
             switch (type) 
@@ -1349,6 +1459,8 @@ namespace MSFS
             if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "SimVar value requested: " + simvar, LOG_INFO);
             
             msfsCommander.GetSimVarSimConnect_1(simvar);
+
+            msfsCommander.DisconnectSimConnect();
 
             return msfsCommander;
 
@@ -1462,6 +1574,81 @@ namespace MSFS
 
             return VA.GetText(vaVar);
 
+        }
+
+        private static void StartWebSocketServer()
+        {
+            try
+            {
+
+
+
+                webSocketServer = new WebSocketServer("ws://127.0.0.1:49152");
+
+                
+
+                // Start the server
+                webSocketServer.Start(socket =>
+                {
+                    // Handle the WebSocket connection
+                    socket.OnOpen = () => Console.WriteLine("WebSocket Opened");
+                    socket.OnClose = () => Console.WriteLine("WebSocket Closed");
+                    
+                    // Provide paragraphs of text when a connection is established
+
+
+                    socket.Send(Utils.webSocketColor + " " + Utils.webSocketMessage);
+
+                    
+
+                });
+
+                
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket server started on ws://127.0.0.1:49152", LOG_NORMAL);
+
+                if (DebugMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket message: " + Utils.webSocketColor + " " + Utils.webSocketMessage, LOG_NORMAL);
+
+
+                StopWebSocketServer();
+
+            }
+            catch (Exception ex)
+            {
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Error starting WebSocket server: " + ex, LOG_ERROR);
+            }
+
+        }
+
+        private static void StopWebSocketServer()
+        {
+            try
+            {
+                // Stop the WebSocket server
+                webSocketServer?.Dispose();
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket server stopped", LOG_NORMAL);
+            }
+            catch (Exception ex)
+            {
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Error stopping WebSocket server: " + ex, LOG_ERROR);
+            }
+        }
+
+
+        public static void SaveLogEntry(DateTime theDate, String theMessage, String theIconColor)
+        {
+
+
+            using (StreamWriter writer = File.AppendText("C:\\FVCVAlog.txt"))
+            {
+                // Add the content as a new paragraph
+                writer.WriteLine(theMessage);
+            }
+            
+
+            if (webSocketClient != null)
+            {
+                webSocketClient.Send(theIconColor + " " + theMessage);
+            }
         }
 
 

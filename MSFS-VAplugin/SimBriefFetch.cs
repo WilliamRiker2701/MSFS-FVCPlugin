@@ -43,6 +43,7 @@ namespace MSFS
         public string OriginTAFTime { get; set; }
         public string OriginWind { get; set; }
         public string OriginPressure { get; set; }
+        public double OriginPressureINHG {  get; set; }
         public string OriginTemp { get; set; }
         public string Destination { get; set; }
         public int DestElevation { get; set; }
@@ -55,6 +56,7 @@ namespace MSFS
         public string DestTAFTime { get; set; }
         public string DestWind { get; set; }
         public string DestPressure { get; set; }
+        public double DestPressureINHG { get; set; }
         public string DestTemp { get; set; }
         public string Altn { get; set; }
         public int AltnElevation { get; set; }
@@ -67,6 +69,7 @@ namespace MSFS
         public string AltnTAFTime { get; set; }
         public string AltnWind { get; set; }
         public string AltnPressure { get; set; }
+        public double AltnPressureINHG { get; set; }
         public string AltnTemp { get; set; }
         public string Units { get; set; }
         public double FinRes { get; set; }
@@ -437,6 +440,11 @@ namespace MSFS
 
             try
             {
+                double presHPA = 0;
+                double presINHG = 0;
+                string presHPAs = "NULL";
+                string presINHGs = "NULL";
+
                 if (OriginMetarTime.Length > 1)
                 {
 
@@ -462,7 +470,34 @@ namespace MSFS
                         OriginPressure = "NO DATA";
 
                     }
-                                        
+
+                    if (OriginPressure.Substring(0, 1) == "Q")
+                    {
+                        presHPAs = OriginPressure.Substring(1, 4);
+                        presHPA = Convert.ToDouble(presHPAs);
+
+                        presINHG = presHPA / 33.864;
+                        OriginPressureINHG = presINHG;
+                        presINHGs = Convert.ToString(presINHG);
+                        presINHGs = presINHGs.Substring(0, 5);
+
+                        OriginPressure = presHPAs + " hPa / " + presINHGs + " inHg";
+
+                    }
+                    else if (AltnPressure.Substring(0, 1) == "A")
+                    {
+                        presINHGs = OriginPressure.Substring(1, 4);
+                        presINHG = Convert.ToDouble(presINHGs);
+                        presINHG = presINHG / 100;
+                        OriginPressureINHG = presINHG;
+
+                        presHPA = presINHG * 33.864;
+                        presHPAs = Convert.ToString(presHPA);
+                        presHPAs = presHPAs.Substring(0, 4);
+
+                        OriginPressure = presHPAs + " hPa / " + presINHGs + " inHg";
+                    }
+
                     VoiceAttackPlugin.LogOutput("OriginPressure", "grey");
 
                 }
@@ -662,6 +697,12 @@ namespace MSFS
 
             try
             {
+
+                double presHPA = 0;
+                double presINHG = 0;
+                string presHPAs = "NULL";
+                string presINHGs = "NULL";
+
                 if (AltnMetarTime.Length > 1)
                 {
 
@@ -686,6 +727,33 @@ namespace MSFS
 
                         AltnPressure = "NO DATA";
 
+                    }
+
+                    if (AltnPressure.Substring(0,1) == "Q")
+                    {
+                        presHPAs = AltnPressure.Substring(1,4);
+                        presHPA = Convert.ToDouble(presHPAs);
+
+                        presINHG = presHPA / 33.864;
+                        AltnPressureINHG = presINHG;
+                        presINHGs = Convert.ToString(presINHG);
+                        presINHGs = presINHGs.Substring(0, 5);
+
+                        AltnPressure = presHPAs + " hPa / " + presINHGs + " inHg";
+
+                    }
+                    else if (AltnPressure.Substring(0,1) == "A")
+                    {
+                        presINHGs = AltnPressure.Substring(1, 4);
+                        presINHG = Convert.ToDouble(presINHGs);
+                        presINHG = presINHG / 100;
+                        AltnPressureINHG = presINHG;
+
+                        presHPA = presINHG * 33.864;
+                        presHPAs = Convert.ToString(presHPA);
+                        presHPAs = presHPAs.Substring(0, 4);
+
+                        AltnPressure = presHPAs + " hPa / " + presINHGs + " inHg";
                     }
 
                     VoiceAttackPlugin.LogOutput("AltnPressure", "grey");
@@ -888,6 +956,11 @@ namespace MSFS
 
             try
             {
+                double presHPA = 0;
+                double presINHG = 0;
+                string presHPAs = "NULL";
+                string presINHGs = "NULL";
+
                 if (DestMetarTime.Length > 1)
                 {
 
@@ -912,6 +985,33 @@ namespace MSFS
 
                         DestPressure = "NO DATA";
 
+                    }
+
+                    if (DestPressure.Substring(0, 1) == "Q")
+                    {
+                        presHPAs = DestPressure.Substring(1, 4);
+                        presHPA = Convert.ToDouble(presHPAs);
+
+                        presINHG = presHPA / 33.864;
+                        DestPressureINHG = presINHG;
+                        presINHGs = Convert.ToString(presINHG);
+                        presINHGs = presINHGs.Substring(0, 5);
+
+                        DestPressure = presHPAs + " hPa / " + presINHGs + " inHg";
+
+                    }
+                    else if (AltnPressure.Substring(0, 1) == "A")
+                    {
+                        presINHGs = DestPressure.Substring(1, 4);
+                        presINHG = Convert.ToDouble(presINHGs);
+                        presINHG = presINHG / 100;
+                        DestPressureINHG = presINHG;
+
+                        presHPA = presINHG * 33.864;
+                        presHPAs = Convert.ToString(presHPA);
+                        presHPAs = presHPAs.Substring(0, 4);
+
+                        DestPressure = presHPAs + " hPa / " + presINHGs + " inHg";
                     }
 
                     VoiceAttackPlugin.LogOutput("DestPressure", "grey");
@@ -1120,6 +1220,7 @@ namespace MSFS
             Utils.sbOriginMetar = OriginMetar;
             Utils.sbOriginTAF = OriginTAF;
             Utils.sbOriginPressure = OriginPressure;
+            Utils.sbOriginPressureINHG= OriginPressureINHG;
             Utils.sbOriginTemp = OriginTemp;
             Utils.sbAltn = Altn;
             Utils.sbAltnElevation = AltnElevation;
@@ -1130,6 +1231,7 @@ namespace MSFS
             Utils.sbAltnMetar = AltnMetar;
             Utils.sbAltnTAF = AltnTAF;
             Utils.sbAltnPressure = AltnPressure;
+            Utils.sbAltnPressureINHG = AltnPressureINHG;
             Utils.sbAltnTemp = AltnTemp;
             Utils.sbDestination = Destination;
             Utils.sbDestElevation = DestElevation;
@@ -1140,6 +1242,7 @@ namespace MSFS
             Utils.sbDestMetar = DestMetar;
             Utils.sbDestTAF = DestTAF;
             Utils.sbDestPressure = DestPressure;
+            Utils.sbDestPressureINHG = DestPressureINHG;
             Utils.sbDestTemp = DestTemp;
             Utils.sbUnits = Units;
             Utils.sbFinRes = FinRes;

@@ -46,6 +46,8 @@ namespace MSFS
 
         public static string resultDataType = "NULL";
 
+        public static bool simVarSubscription = false;
+
 
         //SimBrief variables-----------------------------------------------------------------------
 
@@ -101,6 +103,8 @@ namespace MSFS
 
         public static string sbOriginPressure = "NULL";
 
+        public static double sbOriginPressureINHG = 0;
+
         public static string sbOriginTemp = "NULL";
 
         public static string sbAltn = "NULL";
@@ -127,6 +131,8 @@ namespace MSFS
 
         public static string sbAltnPressure = "NULL";
 
+        public static double sbAltnPressureINHG = 0;
+
         public static string sbAltnTemp = "NULL";
 
         public static string sbDestination = "NULL";
@@ -152,6 +158,8 @@ namespace MSFS
         public static string sbDestWind = "NULL";
 
         public static string sbDestPressure = "NULL";
+
+        public static double sbDestPressureINHG = 0;
 
         public static string sbDestTemp = "NULL";
 
@@ -300,12 +308,16 @@ namespace MSFS
 
         public static bool errcon = false;
 
+        public static string webSocketMessage;
+
+        public static string webSocketColor;
+
 
         public static void SetCallsign()
         {
-            sbCallsign = sbAirlineICAO + sbFlight;
+            sbCallsign = ConvertToRadiophonic(sbFlight);
 
-            sbCallsign = ConvertToRadiophonic(sbCallsign);
+            sbCallsign = sbAirlineICAO + " " + sbCallsign;
         }
 
         public static string ConvertToRadiophonic(string toRadiophonic) 

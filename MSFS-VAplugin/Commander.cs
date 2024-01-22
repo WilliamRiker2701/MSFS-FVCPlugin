@@ -3039,6 +3039,55 @@ namespace MSFS
 
         }
 
+        public void SubscribeSimVarSimConnect()
+        {
+
+            {
+                VoiceAttackPlugin.LogOutput("Connecting SimConnect...", "grey");
+
+                try
+                {
+                    int count = 0;
+
+                    _simConnection = new SimConnect("FVCplugin", IntPtr.Zero, WM_USER_SIMCONNECT, null, 0);
+
+                    /// Listen to connect and quit msgs
+                    _simConnection.OnRecvOpen += simconnect_OnRecvOpen;
+                    _simConnection.OnRecvQuit += simconnect_OnRecvQuit;
+                    //_simConnection.OnRecvException += simconnect_OnRecvException;
+
+                    _simConnection.OnRecvSimobjectDataBytype += simconnect_OnRecvSimobjectDataBytype;
+
+                    _simConnection.SetNotificationGroupPriority(NOTIFICATION_GROUPS.DEFAULT, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
+
+                    VoiceAttackPlugin.LogOutput("Connection established", "grey");
+
+                    while (isLastMessageReceived == false && count <= 10)
+                    {
+                        VoiceAttackPlugin.LogOutput("Waiting message", "grey");
+
+                        count++;
+
+                        _simConnection.ReceiveMessage();
+
+                        Thread.Sleep(100);
+
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    VoiceAttackPlugin.LogOutput("" + ex, "grey");
+                }
+
+
+
+            }
+
+        }
+
         public void GetSimVarSimConnect_1(string varName)
         {
 
@@ -3098,7 +3147,15 @@ namespace MSFS
 
                         VoiceAttackPlugin.LogOutput("3 index digit SimVar registered: " + Utils.simvar, "grey");
 
-                        GetSimVarSimConnect_2();
+                        if (Utils.simVarSubscription == false)
+                        {
+                            GetSimVarSimConnect_2();
+                        }
+                        else
+                        {
+                            SubscribeSimVarSimConnect();
+                        }
+                        
 
                     }
                     else
@@ -3129,7 +3186,14 @@ namespace MSFS
 
                         do
                         {
-                            GetSimVarSimConnect_2();
+                            if (Utils.simVarSubscription == false)
+                            {
+                                GetSimVarSimConnect_2();
+                            }
+                            else
+                            {
+                                SubscribeSimVarSimConnect();
+                            }
                         }
 
                         while (isLastMessageReceived == false);
@@ -3163,8 +3227,15 @@ namespace MSFS
                     Utils.simvarunit = unit;
 
                     VoiceAttackPlugin.LogOutput("1 index digit SimVar registered: " + Utils.simvar, "grey");
-                    
-                    GetSimVarSimConnect_2();
+
+                    if (Utils.simVarSubscription == false)
+                    {
+                        GetSimVarSimConnect_2();
+                    }
+                    else
+                    {
+                        SubscribeSimVarSimConnect();
+                    }
                 }
 
             }
@@ -3191,8 +3262,41 @@ namespace MSFS
                 Utils.simvarunit = unit;
 
                 VoiceAttackPlugin.LogOutput("0 index digit SimVar registered: " + Utils.simvar, "grey");
-                
-                GetSimVarSimConnect_2();
+
+                if (Utils.simVarSubscription == false)
+                {
+                    GetSimVarSimConnect_2();
+                }
+                else
+                {
+                    SubscribeSimVarSimConnect();
+                }
+            }
+
+        }
+
+        public void DisconnectSimConnect()
+        {
+
+            {
+                VoiceAttackPlugin.LogOutput("Disconnecting SimConnect...", "grey");
+
+                try
+                {
+                    _simConnection.ClearDataDefinition(DataDefinitions.SimVar);
+                    _simConnection.Dispose();
+
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    VoiceAttackPlugin.LogOutput("" + ex, "grey");
+                }
+
+
+
             }
 
         }
@@ -3236,6 +3340,9 @@ namespace MSFS
             TriggerCalcCode(Utils.sbOriginTransLevel + " (>L:SimBrief_OriginTransLevel)");
             VoiceAttackPlugin.LogMonitorOutput("OriginTransLevel: " + Utils.sbOriginTransLevel, "blue");
 
+            TriggerCalcCode(Utils.sbOriginPressureINHG + " (>L:SimBrief_OriginPressureINHG)");
+            VoiceAttackPlugin.LogMonitorOutput("OriginPressureINHG: " + Utils.sbOriginPressureINHG, "blue");
+
             TriggerCalcCode(Utils.sbAltnElevation + " (>L:SimBrief_AltnElevation)");
             VoiceAttackPlugin.LogMonitorOutput("AltnElevation: " + Utils.sbAltnElevation, "blue");
 
@@ -3245,6 +3352,9 @@ namespace MSFS
             TriggerCalcCode(Utils.sbAltnTransLevel + " (>L:SimBrief_AltnTransLevel)");
             VoiceAttackPlugin.LogMonitorOutput("AltnTransLevel: " + Utils.sbAltnTransLevel, "blue");
 
+            TriggerCalcCode(Utils.sbAltnPressureINHG + " (>L:SimBrief_AltnPressureINHG)");
+            VoiceAttackPlugin.LogMonitorOutput("AltnPressureINHG: " + Utils.sbAltnPressureINHG, "blue");
+
             TriggerCalcCode(Utils.sbDestElevation + " (>L:SimBrief_DestElevation)");
             VoiceAttackPlugin.LogMonitorOutput("DestElevation: " + Utils.sbDestElevation, "blue");
 
@@ -3253,6 +3363,9 @@ namespace MSFS
 
             TriggerCalcCode(Utils.sbDestTransLevel + " (>L:SimBrief_DestTransLevel)");
             VoiceAttackPlugin.LogMonitorOutput("DestTransLevel: " + Utils.sbDestTransLevel, "blue");
+
+            TriggerCalcCode(Utils.sbDestPressureINHG + " (>L:SimBrief_DestPressureINHG)");
+            VoiceAttackPlugin.LogMonitorOutput("DestPressureINHG: " + Utils.sbDestPressureINHG, "blue");
 
             TriggerCalcCode(Utils.sbFinRes + " (>L:SimBrief_FinRes)");
             VoiceAttackPlugin.LogMonitorOutput("FinRes: " + Utils.sbFinRes, "blue");
@@ -3306,6 +3419,9 @@ namespace MSFS
 
             VoiceAttackPlugin.SetText("sbCallsign", Utils.sbCallsign);
             VoiceAttackPlugin.LogMonitorOutput("sbCallsign: " + Utils.sbCallsign, "blue");
+
+            VoiceAttackPlugin.SetText("sbFlightCall", Utils.sbAirlineICAO+Utils.sbFlight);
+            VoiceAttackPlugin.LogMonitorOutput("sbFlightCall: " + Utils.sbAirlineICAO + Utils.sbFlight, "blue");
 
             VoiceAttackPlugin.SetText("sbCruiseProf", Utils.sbCruiseProf);
             VoiceAttackPlugin.LogMonitorOutput("sbCruiseProf: " + Utils.sbCruiseProf, "blue");
