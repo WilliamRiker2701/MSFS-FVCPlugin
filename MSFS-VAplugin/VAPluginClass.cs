@@ -23,6 +23,7 @@ using System.Globalization;
 using Fleck;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MSFS
 {
@@ -37,6 +38,16 @@ namespace MSFS
         private static WebSocketServer webSocketServer;
         public string reqType = "NULL";
         private static IWebSocketConnection webSocketClient;
+
+
+
+        public static string directoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        public const string logfolderName = "Log";
+
+        public static string logfolderPath = Path.Combine(directoryPath, logfolderName);
+
+        public static string logfilePath = Path.Combine(logfolderPath, "log.txt");
 
 
         /// <summary>
@@ -81,7 +92,12 @@ namespace MSFS
             // uncomment this line to force the debugger to attach at the very start of the class being created
             //System.Diagnostics.Debugger.Launch();
 
-            File.Delete("C:\\FVCVAlog.txt");
+            
+
+            File.Delete(logfilePath);
+
+            Directory.CreateDirectory(logfilePath);
+
 
             VA = vaProxy;
 
@@ -1638,7 +1654,7 @@ namespace MSFS
         {
 
 
-            using (StreamWriter writer = File.AppendText("C:\\FVCVAlog.txt"))
+            using (StreamWriter writer = File.AppendText(logfilePath))
             {
                 // Add the content as a new paragraph
                 writer.WriteLine(theMessage);
