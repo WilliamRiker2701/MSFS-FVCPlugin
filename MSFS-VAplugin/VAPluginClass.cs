@@ -55,7 +55,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4";
+            return "MSFS-FVCplugin - v1.4.1";
         }
 
         /// <summary>
@@ -92,11 +92,13 @@ namespace MSFS
             // uncomment this line to force the debugger to attach at the very start of the class being created
             //System.Diagnostics.Debugger.Launch();
 
-            
 
-            File.Delete(logfilePath);
+            if (File.Exists(logfilePath))
+            {
+                File.Delete(logfilePath);
+            }
 
-            Directory.CreateDirectory(logfilePath);
+            Directory.CreateDirectory(logfolderPath);
 
 
             VA = vaProxy;
@@ -112,13 +114,15 @@ namespace MSFS
                 // Handle the WebSocket connection
                 socket.OnOpen = () =>
                 {
-                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel opened", LOG_NORMAL);
+                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel opened", "orange");
+                    VA.WriteToLog(" ", "blank");
                     webSocketClient = socket;
                 };
 
                 socket.OnClose = () =>
                 {
-                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel closed", LOG_NORMAL);
+                    VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel closed", "orange");
+                    VA.WriteToLog(" ", "blank");
                     if (webSocketClient == socket)
                     {
                         webSocketClient = null;
@@ -441,7 +445,8 @@ namespace MSFS
 
                         case "Target":
 
-                            
+                            int count2 = 0;
+
                             MSFS.Utils.errvar = context;
 
                             msfsCommander = ConnectToWASM2(vaProxy);
@@ -483,7 +488,7 @@ namespace MSFS
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New Value: " + varResult + "| Variable: " + context, LOG_NORMAL);
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Target Value: " + varResult2 + "| Target: " + targetVar, LOG_NORMAL);
 
-                            while (dData != varResult2)
+                            while (dData != varResult2  && count2 < 10)
                             {
                                 msfsCommander.SetLVarFSUIPC(context, eventData);
 
@@ -493,7 +498,10 @@ namespace MSFS
 
                                 if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Set retry, New target value: " + varResult2, LOG_NORMAL);
 
+                                count2++;
+
                             }
+
 
 
 
