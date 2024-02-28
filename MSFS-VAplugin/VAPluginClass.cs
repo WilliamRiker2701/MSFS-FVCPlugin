@@ -24,6 +24,7 @@ using Fleck;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace MSFS
 {
@@ -373,6 +374,20 @@ namespace MSFS
             {
 
                 varKind = "readappSetting";
+
+            }
+
+            else if (context == "PMDG.R")
+            {
+
+                varKind = "PMDG read serial";
+
+            }
+
+            else if (context == "PMDG.W")
+            {
+
+                varKind = "PMDG write serial";
 
             }
 
@@ -1278,6 +1293,71 @@ namespace MSFS
 
                     break;
 
+                case "PMDG read serial":
+
+                    string serial = "";
+                    string value;
+                    string zeroLetters = "acegikmoqsuwy";
+                    string oneLetters = "bdfhjlnprtvxz";
+                    string baseDirectory = vaProxy.PluginPath();
+                    string filePath = Path.Combine(baseDirectory.Substring(0, baseDirectory.Length - 18), "System.Value.dat");
+                    vaProxy.SetText("FirstTimePMDGERROR", "0");
+                    
+                    try
+                    {
+                        serial = File.ReadAllText(filePath);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        vaProxy.WriteToLog("PMDG init error: " + ex, "red");
+                        vaProxy.SetText("FirstTimePMDGERROR", "1");
+                        serial = "";
+                    }
+
+                    char seventhChar = serial[6];
+
+                    string seventh = seventhChar.ToString();
+
+                    bool isPresent = zeroLetters.Contains(seventhChar);
+
+                    value = isPresent.ToString();
+
+                    vaProxy.SetText("FirstTimePMDG", value);
+
+                    break;
+
+                case "PMDG write serial":
+
+                    oneLetters = "bdfhjlnprtvxz";
+
+                    baseDirectory = vaProxy.PluginPath();
+                    filePath = Path.Combine(baseDirectory.Substring(0, baseDirectory.Length - 18), "System.Value.dat");
+                    vaProxy.SetText("FirstTimePMDGERROR", "0");
+                    Random random = new Random();
+
+                    serial = "";
+
+                    int randomIndex = random.Next(oneLetters.Length);
+                    char randomLetter = oneLetters[randomIndex];
+
+                    // Add some dummy letters and numbers
+                    serial += GetRandomString(3); // 3 random characters
+                    serial += randomLetter;
+                    serial += GetRandomString(12); // 12 random characters
+
+                    try
+                    {
+                        File.WriteAllText(filePath, serial);
+                    }
+                    catch (Exception ex)
+                    {
+                        vaProxy.WriteToLog("PMDG init error type W: " + ex, "red");
+
+                    }
+
+                    break;
+
 
             }
 
@@ -1673,6 +1753,14 @@ namespace MSFS
             {
                 webSocketClient.Send(theIconColor + " " + theMessage);
             }
+        }
+
+        public static string GetRandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
 
