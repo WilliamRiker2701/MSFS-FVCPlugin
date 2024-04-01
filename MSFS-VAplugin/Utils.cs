@@ -48,6 +48,8 @@ namespace MSFS
 
         public static bool simVarSubscription = false;
 
+        public static string calcString = "NULL";
+
 
         //SimBrief variables-----------------------------------------------------------------------
 

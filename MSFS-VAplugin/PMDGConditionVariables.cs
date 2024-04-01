@@ -17,6 +17,7 @@ namespace MSFS
     {
         public enum PMDGVarAddress
         {
+            AircraftModel = 0x6C8E,
             AIR_FltAltWindow = 0x656C,
             AIR_LandAltWindow = 0x6572,
             APU_EGTNeedle = 0x64E8,
@@ -42,6 +43,10 @@ namespace MSFS
             FUEL_annunLOWPRESS_Fwd = 0x648D,
             FUEL_annunLOWPRESS_Aft = 0x648F,
             FUEL_annunLOWPRESS_Ctr = 0x6491,
+            FMC_TakeoffFlaps = 0x6C6C,
+            FMC_V1 = 0x6C6D,
+            FMC_VR = 0x6C6E,
+            FMC_V2 = 0x6C6F,
 
 
 
@@ -49,6 +54,7 @@ namespace MSFS
         }
         public enum PMDGVarTypes
         {
+            AircraftModel = 611,
             AIR_FltAltWindow = 56,
             AIR_LandAltWindow = 56,
             APU_EGTNeedle = 41,
@@ -74,6 +80,10 @@ namespace MSFS
             FUEL_annunLOWPRESS_Fwd = 12,
             FUEL_annunLOWPRESS_Aft = 12,
             FUEL_annunLOWPRESS_Ctr = 12,
+            FMC_TakeoffFlaps = 11,
+            FMC_V1 = 11,
+            FMC_VR = 11,
+            FMC_V2 = 11,
 
 
         }

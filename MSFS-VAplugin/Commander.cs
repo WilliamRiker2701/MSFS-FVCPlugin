@@ -718,6 +718,7 @@ namespace MSFS
 
                 _waSimConnection.executeCalculatorCode(calcCode, CalcResultType.Double, out double fResult, out string sResult);
                 VoiceAttackPlugin.LogOutput("Calculator code " + calcCode + " returned: " + fResult + " and " + sResult, "grey");
+                Utils.calcString = sResult;
                 return fResult;
 
             }

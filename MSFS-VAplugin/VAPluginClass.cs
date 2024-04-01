@@ -56,7 +56,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4.1";
+            return "MSFS-FVCplugin - v1.4.2";
         }
 
         /// <summary>
@@ -116,14 +116,12 @@ namespace MSFS
                 socket.OnOpen = () =>
                 {
                     VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel opened", "orange");
-                    VA.WriteToLog(" ", "blank");
                     webSocketClient = socket;
                 };
 
                 socket.OnClose = () =>
                 {
                     VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel closed", "orange");
-                    VA.WriteToLog(" ", "blank");
                     if (webSocketClient == socket)
                     {
                         webSocketClient = null;
@@ -363,6 +361,13 @@ namespace MSFS
 
             }
 
+            else if (context == "HEXTODEC")
+            {
+
+                varKind = "ConvertHexToDecimal";
+
+            }
+
             else if (context == "Set.appSetting")
             {
 
@@ -412,7 +417,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -469,7 +474,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -542,7 +547,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -652,7 +657,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -723,7 +728,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -824,12 +829,16 @@ namespace MSFS
 
                             thrSleep = vaProxy.GetText(VARIABLE_NAMESPACE + ".ThreadSleep");
 
+                            slpValue = int.Parse(thrSleep);
+
                             while (i < multInt)
                             {
 
                                 msfsCommander.TriggerWASM(context, eventData);
 
                                 i = i + 1;
+
+                                Thread.Sleep(slpValue);
 
                             }
 
@@ -877,7 +886,7 @@ namespace MSFS
                             while (MSFS.Utils.errcon == true)
                             {
 
-                                vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                                 msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -977,7 +986,7 @@ namespace MSFS
                     while (MSFS.Utils.errcon == true)
                     {
 
-                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                        if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                         msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -1122,7 +1131,7 @@ namespace MSFS
                     while (MSFS.Utils.errcon == true)
                     {
 
-                        vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+                        if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
 
                         msfsCommander = ConnectToWASM2(vaProxy);
 
@@ -1138,6 +1147,7 @@ namespace MSFS
 
                     vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".ValueGet", (decimal?)(double?)varRes);
 
+                    vaProxy.SetText(VARIABLE_NAMESPACE + ".StringGet", Utils.calcString);
 
                     if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Calculator code response: " + varRes, LOG_NORMAL);
 
@@ -1256,6 +1266,32 @@ namespace MSFS
                 case "serverstop":
 
                     StopWebSocketServer();
+
+                    break;
+
+                case "ConvertHexToDecimal":
+
+                    string hexNumber = vaProxy.GetText("HexNumber");
+
+                    int decimalValue = 0;
+
+                    for (int j = hexNumber.Length - 1, power = 0; j >= 0; j--, power++)
+                    {
+                        int digitValue;
+
+                        if (char.IsDigit(hexNumber[j]))
+                        {
+                            digitValue = hexNumber[j] - '0';
+                        }
+                        else
+                        {
+                            digitValue = char.ToUpper(hexNumber[j]) - 'A' + 10;
+                        }
+
+                        decimalValue += digitValue * (int)Math.Pow(16, power);
+                    }
+
+                    vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".ValueGet", (decimal?)(double?)decimalValue);
 
                     break;
 
@@ -1634,6 +1670,8 @@ namespace MSFS
             }
 
         }
+
+
 
         public static void LogOutput(string message, string color = "blank")
         {
