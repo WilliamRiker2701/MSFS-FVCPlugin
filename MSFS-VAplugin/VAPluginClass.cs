@@ -56,7 +56,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4.2";
+            return "MSFS-FVCplugin - v1.4.2-c";
         }
 
         /// <summary>
@@ -431,13 +431,15 @@ namespace MSFS
 
                             dData = Convert.ToDouble(eventData);
 
-                            msfsCommander.SetLVarFSUIPC(context, eventData);
+                            //msfsCommander.SetLVarFSUIPC(context, eventData);
+                            msfsCommander.TriggerWASM(context, eventData);
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "SetLVarFSUIPC Executed", LOG_INFO);
 
                             Thread.Sleep(100);
 
-                            varResult = msfsCommander.GetLVarFSUIPC(context);
+                            //varResult = msfsCommander.GetLVarFSUIPC(context);
+                            varResult = msfsCommander.TriggerWASM(context);
 
 
                             while (dData != varResult && count <= 10)
@@ -445,11 +447,13 @@ namespace MSFS
                                 
                                 count ++;
 
-                                msfsCommander.SetLVarFSUIPC(context, eventData);
+                                //msfsCommander.SetLVarFSUIPC(context, eventData);
+                                msfsCommander.TriggerWASM(context, eventData);
 
                                 Thread.Sleep(100);
 
-                                varResult = msfsCommander.GetLVarFSUIPC(context);
+                                //varResult = msfsCommander.GetLVarFSUIPC(context);
+                                varResult = msfsCommander.TriggerWASM(context);
 
                                 if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Set retry, New value: " + varResult, LOG_NORMAL);                                                       
 
@@ -496,25 +500,30 @@ namespace MSFS
 
                             dData = Convert.ToDouble(eventData2);
 
-                            msfsCommander.SetLVarFSUIPC(context, eventData);
+                            //msfsCommander.SetLVarFSUIPC(context, eventData);
+                            msfsCommander.TriggerWASM(context, eventData);
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "SetLVarFSUIPC Executed", LOG_INFO);
 
                             Thread.Sleep(100);
 
-                            varResult = msfsCommander.GetLVarFSUIPC(context);
-                            varResult2 = msfsCommander.GetLVarFSUIPC("L:"+targetVar);
+                            //varResult = msfsCommander.GetLVarFSUIPC(context);
+                            varResult = msfsCommander.TriggerWASM(context);
+                            //varResult2 = msfsCommander.GetLVarFSUIPC("L:"+targetVar);
+                            varResult2 = msfsCommander.TriggerWASM("L:" + targetVar);
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "New Value: " + varResult + "| Variable: " + context, LOG_NORMAL);
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Target Value: " + varResult2 + "| Target: " + targetVar, LOG_NORMAL);
 
                             while (dData != varResult2  && count2 < 10)
                             {
-                                msfsCommander.SetLVarFSUIPC(context, eventData);
+                                //msfsCommander.SetLVarFSUIPC(context, eventData);
+                                msfsCommander.TriggerWASM(context, eventData);
 
                                 Thread.Sleep(50);
 
-                                varResult2 = msfsCommander.GetLVarFSUIPC("L:" + targetVar);
+                                //varResult2 = msfsCommander.GetLVarFSUIPC("L:" + targetVar);
+                                varResult2 = msfsCommander.TriggerWASM("L:" + targetVar);
 
                                 if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Set retry, New target value: " + varResult2, LOG_NORMAL);
 
@@ -574,7 +583,8 @@ namespace MSFS
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing Local Variable data request: " + context, LOG_INFO);
                                                      
-                            varResult = msfsCommander.GetLVarFSUIPC(context);
+                            //varResult = msfsCommander.GetLVarFSUIPC(context);
+                            varResult = msfsCommander.TriggerWASM(context);
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "varResult: " + varResult, LOG_INFO);
 
@@ -1338,28 +1348,50 @@ namespace MSFS
                     string baseDirectory = vaProxy.PluginPath();
                     string filePath = Path.Combine(baseDirectory.Substring(0, baseDirectory.Length - 18), "System.Value.dat");
                     vaProxy.SetText("FirstTimePMDGERROR", "0");
-                    
-                    try
+
+                    if (File.Exists(filePath))
                     {
-                        serial = File.ReadAllText(filePath);
+                        try
+                        {
+                            serial = File.ReadAllText(filePath);
 
+                            int length = serial.Length;
+
+                            if (length == 16)
+                            {
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Serial length correct. Processing serial.", LOG_INFO);
+
+                                char seventhChar = serial[6];
+
+                                string seventh = seventhChar.ToString();
+
+                                bool isPresent = zeroLetters.Contains(seventhChar);
+
+                                value = isPresent.ToString();
+
+                                vaProxy.SetText("FirstTimePMDG", value);
+                            }
+
+                            else
+                            {
+                                if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Serial length incorrect. Assuming first run.", LOG_INFO);
+                                vaProxy.SetText("FirstTimePMDG", "True");
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            vaProxy.WriteToLog("PMDG init error: " + ex, "red");
+                            vaProxy.SetText("FirstTimePMDGERROR", "1");
+                            serial = "";
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        vaProxy.WriteToLog("PMDG init error: " + ex, "red");
-                        vaProxy.SetText("FirstTimePMDGERROR", "1");
-                        serial = "";
+                        if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Serial file not found. Assuming first run.", LOG_INFO);
+                        vaProxy.SetText("FirstTimePMDG", "True");
                     }
-
-                    char seventhChar = serial[6];
-
-                    string seventh = seventhChar.ToString();
-
-                    bool isPresent = zeroLetters.Contains(seventhChar);
-
-                    value = isPresent.ToString();
-
-                    vaProxy.SetText("FirstTimePMDG", value);
+                                                   
 
                     break;
 

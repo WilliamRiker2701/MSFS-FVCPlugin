@@ -1363,19 +1363,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1424,19 +1428,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1542,19 +1550,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1601,19 +1613,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1720,19 +1736,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1779,19 +1799,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1897,19 +1921,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -1957,19 +1985,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2075,19 +2107,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2135,19 +2171,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2253,19 +2293,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2313,19 +2357,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2431,19 +2479,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2491,19 +2543,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2610,19 +2666,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2672,19 +2732,23 @@ namespace MSFS
                                 Thread.Sleep(50);
 
                                 utilS = "SimConnect_" + lvardesignation + "Length";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Length L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Heading";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Heading L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "Slope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway Slope L variable: " + utilD, "grey");
 
                                 utilS = "SimConnect_" + lvardesignation + "TrueSlope";
-                                utilD = GetLVarFSUIPC(utilS);
+                                //utilD = GetLVarFSUIPC(utilS);
+                                utilD = TriggerWASM(utilS);
                                 VoiceAttackPlugin.LogOutput("Runway TrueSlope L variable: " + utilD, "grey");
 
 
@@ -2727,14 +2791,16 @@ namespace MSFS
                             VoiceAttackPlugin.LogOutput("Localizer Freq VA variable: " + utilS, "grey");
 
                             utilS = "SimConnect_" + lvardesignation + "LOCfreq";
-                            utilD = GetLVarFSUIPC(utilS);
+                            //utilD = GetLVarFSUIPC(utilS);
+                            utilD = TriggerWASM(utilS);
                             VoiceAttackPlugin.LogOutput("Localizer Freq L variable: " + utilD, "grey");
 
                             utilS = VoiceAttackPlugin.GetText("MSFS." + lvardesignation + "_LOC_HEAD");
                             VoiceAttackPlugin.LogOutput("Localizer Head VA variable: " + utilS, "grey");
 
                             utilS = "SimConnect_" + lvardesignation + "LOCheading";
-                            utilD = GetLVarFSUIPC(utilS);
+                            //utilD = GetLVarFSUIPC(utilS);
+                            utilD = TriggerWASM(utilS);
                             VoiceAttackPlugin.LogOutput("Localizer Head L variable: " + utilD, "grey");
 
                             utilS = VoiceAttackPlugin.GetText("MSFS." + lvardesignation + "_LOC_NAME");
