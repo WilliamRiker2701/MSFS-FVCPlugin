@@ -50,6 +50,22 @@ namespace MSFS
 
         public static string calcString = "NULL";
 
+        public static string facilityType = "NULL";
+
+        public static string rmkRep = "";
+        public static string tempoRep = "";
+        public static string becmgRep = "";
+
+        public static int TAFsection = 100;
+
+        public static int wpQuantity = 0;
+
+        public static bool tempoRepExists = false;
+        public static bool becmgRepExists = false;
+        public static bool rmkRepExists = false;
+        public static bool stationIdentified = false;
+
+
 
         //SimBrief variables-----------------------------------------------------------------------
 

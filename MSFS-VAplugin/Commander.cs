@@ -1141,42 +1141,83 @@ namespace MSFS
         }
 
 
-        public void FacilityRequest()
+        public void FacilityRequest(int maxRetries = 3, int delayBetweenRetries = 500, int maxWaitTime = 1000)
         {
+
+            int retryCount = 0;
+            bool connectionSuccessful = false;
 
             VoiceAttackPlugin.LogOutput("Connecting Simconnect...", "grey");
 
-            try
+            while (retryCount < maxRetries && !connectionSuccessful)
             {
-                _simConnection = new SimConnect("FVCplugin", IntPtr.Zero, WM_USER_SIMCONNECT, null, 0);
-
-                /// Listen to connect and quit msgs
-                _simConnection.OnRecvOpen += simconnect_OnRecvOpen;
-                _simConnection.OnRecvQuit += simconnect_OnRecvQuit;
-
-                _simConnection.OnRecvFacilityData += simconnect_Facility_OnRecvFacilityData;
-                _simConnection.OnRecvFacilityDataEnd += simconnect_Facility_OnRecvFacilityDataEnd;
-
-                VoiceAttackPlugin.LogOutput("Connection established", "grey");
-
-                
-                while (isLastMessageReceived == false)
+                try
                 {
-                    System.Threading.Thread.Sleep(100);
 
-                    _simConnection.ReceiveMessage();
+                    if (_simConnection != null)
+                    {
+                        VoiceAttackPlugin.LogOutput("Closing existing SimConnect connection...", "grey");
+                        _simConnection.Dispose();
+                        _simConnection = null;
+                        Thread.Sleep(100);
+                        WASMConnect3();
 
+                        if (MSFS.Utils.errcon == false)
+                        {
+                            VoiceAttackPlugin.LogOutput("Successfully connected to WASM.", "grey");
+                        }
+
+                    }
+
+                    _simConnection = new SimConnect("FVCplugin", IntPtr.Zero, WM_USER_SIMCONNECT, null, 0);
+
+                    /// Listen to connect and quit msgs
+                    _simConnection.OnRecvOpen += simconnect_OnRecvOpen;
+                    _simConnection.OnRecvQuit += simconnect_OnRecvQuit;
+
+                    _simConnection.OnRecvException += simconnect_OnRecvException;
+
+                    _simConnection.OnRecvFacilityData += simconnect_Facility_OnRecvFacilityData;
+                    _simConnection.OnRecvFacilityDataEnd += simconnect_Facility_OnRecvFacilityDataEnd;
+
+                    VoiceAttackPlugin.LogOutput("Waiting for response...", "grey");
+
+                    // Wait for a response with a timeout
+                    int waitTime = 0;
+
+                    while (isLastMessageReceived == false && waitTime < maxWaitTime)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        waitTime += 100;
+                        _simConnection.ReceiveMessage();
+                        VoiceAttackPlugin.LogOutput(".", "grey");
+                    }
+
+                    if (isLastMessageReceived)
+                    {
+                        connectionSuccessful = true;
+                        VoiceAttackPlugin.LogOutput("Facility data received successfully.", "green");
+                    }
+                    else
+                    {
+                        retryCount++;
+                        VoiceAttackPlugin.LogOutput($"Connection timeout, retrying {retryCount}/{maxRetries}.", "yellow");
+                        System.Threading.Thread.Sleep(delayBetweenRetries);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    VoiceAttackPlugin.LogOutput("Exception: " + ex.Message, "red");
+                    retryCount++;
+                    System.Threading.Thread.Sleep(delayBetweenRetries);
                 }
             }
-            catch (Exception ex)
+
+            if (!connectionSuccessful)
             {
-
-                VoiceAttackPlugin.LogOutput("" + ex, "grey");
+                VoiceAttackPlugin.ForceLogOutput("Failed to retrieve " + Utils.facilityType + " data via SimConnect.", "red");
             }
-
-            
         }
-
         public void FacilityWrappingUp()
         {
 
@@ -3611,7 +3652,7 @@ namespace MSFS
         private void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             SIMCONNECT_EXCEPTION e = (SIMCONNECT_EXCEPTION)data.dwException;
-            VoiceAttackPlugin.LogErrorOutput("SimConnect_OnRecvException: " + e.ToString(), "red");
+            VoiceAttackPlugin.LogMonitorOutput("SimConnect_OnRecvException: " + e.ToString() + " - " + data, "red");
 
             // A common exception will be unrecognized data definitions or events
 

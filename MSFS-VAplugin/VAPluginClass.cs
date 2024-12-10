@@ -17,14 +17,24 @@ using WASimCommander.CLI;
 using System.Runtime.Remoting.Contexts;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using FSUIPC;
 using System.Configuration;
 using System.Globalization;
 using Fleck;
+using System.Text;
+using System.Net;
+using System.IO;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.ComponentModel;
 
 namespace MSFS
 {
@@ -56,7 +66,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4.2-c";
+            return "MSFS-FVCplugin - v1.4.3";
         }
 
         /// <summary>
@@ -106,7 +116,7 @@ namespace MSFS
 
             VA.LogEntryAdded += new Action<DateTime, String, String>(SaveLogEntry);
 
-            webSocketServer = new WebSocketServer("ws://127.0.0.1:49152");
+            webSocketServer = new WebSocketServer("ws://127.0.0.1:54325");
 
             // Start the server
 
@@ -146,7 +156,7 @@ namespace MSFS
         /// <summary>
         /// Main function used to process commands from Voice Attack
         /// </summary>
-        public static void VA_Invoke1(dynamic vaProxy)
+        public static async void VA_Invoke1(dynamic vaProxy)
         {
 
             CultureInfo invariantCulture = CultureInfo.InvariantCulture;
@@ -160,6 +170,7 @@ namespace MSFS
             string eventData;
             string eventData2;
             Commander msfsCommander;
+            WeatherReport msfsWeatherReport;
             string varKind = "K";
             string varAction = "Set";
             int outputVar = 0;
@@ -337,6 +348,20 @@ namespace MSFS
             {
 
                 varKind = "SBF";
+
+            }
+
+            else if (context == "METAR")
+            {
+
+                varKind = "METARPULL";
+
+            }
+
+            else if (context == "METARPARSE")
+            {
+
+                varKind = "METARPARSE";
 
             }
 
@@ -1237,6 +1262,90 @@ namespace MSFS
 
                     break;
 
+                case "METARPULL":
+
+                    string ICAO = vaProxy.GetText(VARIABLE_NAMESPACE + ".ValueSet");
+
+                    ICAO = ICAO.ToUpper();
+
+                    string urlMetar = "https://aviationweather.gov/cgi-bin/data/metar.php?ids=" + ICAO + "&hours=0&format=raw";
+                    string urlTaf = "https://aviationweather.gov/cgi-bin/data/taf.php?ids=" + ICAO + "&hours=0&format=raw";
+
+                    string metar = GetPlainTextFromUrl(urlMetar).GetAwaiter().GetResult();
+                    string taf = GetPlainTextFromUrl(urlTaf).GetAwaiter().GetResult();
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "METAR report pulled: " + metar, LOG_INFO);
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "TAF report pulled: " + taf, LOG_INFO);
+
+                    if (metar.Length>1)
+                        metar = metar.Substring(0, metar.Length - 1);
+                    if (taf.Length > 1)
+                        taf = taf.Substring(0, taf.Length - 1);
+
+                    vaProxy.SetText(VARIABLE_NAMESPACE + ".Metar", metar);
+                    vaProxy.SetText(VARIABLE_NAMESPACE + ".Taf", taf);
+
+
+                    break;
+
+                case "METARPARSE":
+                    
+                    WeatherReport weatherReport = new WeatherReport();
+                    string reportType;
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "METAR parse called.", LOG_INFO);
+                                        
+                    try
+                    {                        
+                        string metarRep = vaProxy.GetText(VARIABLE_NAMESPACE + ".ValueSet");
+
+                        if (Regex.IsMatch(metarRep, @"\b\d{4}/\d{4}\b"))
+                        {
+                            reportType = "TAF";
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "TAF report: " + metarRep, LOG_INFO);
+                        }
+                        else
+                        {
+                            reportType = "METAR";
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "METAR report: " + metarRep, LOG_INFO);
+                        }                                                                      
+
+                       if (reportType == "METAR")
+                        {
+                            weatherReport.MetarReport(metarRep);
+
+                            // if RMK another function
+                            if (Utils.tempoRepExists) 
+                            {
+                                weatherReport.AltSection(Utils.tempoRep);
+                                if (Utils.becmgRepExists)
+                                {
+                                    weatherReport.AltSection(Utils.becmgRep);
+                                }
+                            }
+                            if (Utils.becmgRepExists)
+                            {
+                                weatherReport.AltSection(Utils.becmgRep);
+                                if (Utils.tempoRepExists)
+                                {
+                                    weatherReport.AltSection(Utils.tempoRep);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            weatherReport.TafReport(metarRep);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error parsing METAR report: {ex.Message}");
+                    }
+
+                    break;
+
                 case "Compact":
 
                     if (vaProxy.GetBoolean("SetCompact") == true)
@@ -1530,7 +1639,7 @@ namespace MSFS
 
             msfsCommander.DefineRequestType(type);
 
-
+            Utils.facilityType = type;
 
             string reqRunway;
 
@@ -1603,7 +1712,7 @@ namespace MSFS
                     Utils.scSecVORICAO8 = "NULL";
                     Utils.scSecVORregion8 = "NULL";
 
-                    if (Utils.reqVORICAO == "")
+                    if (Utils.reqVORICAO == "" || Utils.reqVORICAO == "NULL")
                     {
                         if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "No data for facility VOR request", LOG_ERROR);
                     }
@@ -1612,6 +1721,7 @@ namespace MSFS
                         if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Facility VOR data requested from " + Utils.reqVORICAO + " Region " + Utils.reqVORregion, LOG_INFO);
 
                         msfsCommander.FacilityRequest();
+
                     }
 
                     break;
@@ -1743,10 +1853,23 @@ namespace MSFS
             VA.SetText(vaVar, cVar);
 
         }
+        public static void SetInt(string vaVar, int cVar)
+        {
+
+            VA.SetInt(vaVar, cVar);
+
+        }
         public static string GetText(string vaVar)
         {
 
             return VA.GetText(vaVar);
+
+        }
+
+        public static void GetInt(string vaVar)
+        {
+
+            VA.GetInt(vaVar);
 
         }
 
@@ -1755,30 +1878,38 @@ namespace MSFS
             try
             {
 
+                VA.WriteToLog(LOG_PREFIX + "Starting Web Socket", LOG_NORMAL);
 
+                int startPort = 40000; // Start outside the dynamic range
+                int endPort = 49151;   // End just before the dynamic range
+                bool isBound = false;
 
-                webSocketServer = new WebSocketServer("ws://127.0.0.1:49152");
-
-                
-
-                // Start the server
-                webSocketServer.Start(socket =>
+                for (int port = startPort; port <= endPort && !isBound; port++)
                 {
-                    // Handle the WebSocket connection
-                    socket.OnOpen = () => Console.WriteLine("WebSocket Opened");
-                    socket.OnClose = () => Console.WriteLine("WebSocket Closed");
-                    
-                    // Provide paragraphs of text when a connection is established
+                    try
+                    {
+                        var server = new WebSocketServer($"ws://0.0.0.0:{port}");
+                        server.Start(socket =>
+                        {
+                            socket.OnOpen = () => Console.WriteLine("WebSocket Opened");
+                            socket.OnClose = () => Console.WriteLine("WebSocket Closed");
+                        });
+                        VA.WriteToLog(LOG_PREFIX + $"Server bound to port {port}", LOG_NORMAL);
+                        isBound = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        VA.WriteToLog(LOG_PREFIX + $"Failed to bind to port {port}: {ex.Message}", LOG_NORMAL);
+                    }
+                }
+
+                if (!isBound)
+                {
+                    VA.WriteToLog(LOG_PREFIX + "Could not bind to any port in the range!", LOG_NORMAL);
+                }
 
 
-                    socket.Send(Utils.webSocketColor + " " + Utils.webSocketMessage);
-
-                    
-
-                });
-
-                
-                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket server started on ws://127.0.0.1:49152", LOG_NORMAL);
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket server started on ws://127.0.0.1:54325", LOG_NORMAL);
 
                 if (DebugMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket message: " + Utils.webSocketColor + " " + Utils.webSocketMessage, LOG_NORMAL);
 
@@ -1833,6 +1964,23 @@ namespace MSFS
             .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+
+        public static async Task<string> GetPlainTextFromUrl(string url)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string result = await client.GetStringAsync(url);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                VA.WriteToLog(LOG_PREFIX + "URL text error: " + ex, "red");
+                return null;
+            }
+        }
 
     }
 }
