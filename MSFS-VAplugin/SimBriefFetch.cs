@@ -159,7 +159,7 @@ namespace MSFS
             }
             catch (Exception e)
             {
-                VoiceAttackPlugin.LogMonitorOutput("Flight. " + e.Message, "red");
+                VoiceAttackPlugin.LogMonitorOutput("AirlineICAO. " + e.Message, "red");
             }
 
 
@@ -261,7 +261,7 @@ namespace MSFS
             }
             catch (Exception e)
             {
-                VoiceAttackPlugin.LogMonitorOutput("TopClimbOAT. " + e.Message, "red");
+                VoiceAttackPlugin.LogMonitorOutput("FixNodes. " + e.Message, "red");
             }
 
             try
@@ -287,7 +287,6 @@ namespace MSFS
                     VoiceAttackPlugin.SetText("sb" + fixName + "isSidStar", fixNode["is_sid_star"].InnerText);
                     VoiceAttackPlugin.SetText("sb" + fixName + "alt", fixNode["altitude_feet"].InnerText);
                     VoiceAttackPlugin.SetText("sb" + fixName + "spd", fixNode["ind_airspeed"].InnerText);
-                    VoiceAttackPlugin.SetText("sb" + fixName + "windComp", fixNode["wind_comp"].InnerText);
                     VoiceAttackPlugin.SetText("sb" + fixName + "windSpd", fixNode["wind_spd"].InnerText);
                     VoiceAttackPlugin.SetText("sb" + fixName + "windDir", fixNode["wind_dir"].InnerText);
                     VoiceAttackPlugin.SetText("sbFixNumber", i.ToString());
