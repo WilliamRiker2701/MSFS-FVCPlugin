@@ -28,6 +28,7 @@ namespace MSFS
         public string DescentProf { get; set; }
         public int CostIndex { get; set; }
         public int InitialAlt { get; set; }
+        public int AvgWindComp { get; set; }
         public int AvgWindDir { get; set; }
         public int AvgWindSpd { get; set; }
         public double TopClimbOAT { get; set; }
@@ -210,6 +211,16 @@ namespace MSFS
             catch (Exception e)
             {
                 VoiceAttackPlugin.LogMonitorOutput("InitialAlt. " + e.Message, "red");
+            }
+
+            try
+            {
+                AvgWindComp = Convert.ToInt32(sbOFP["general"]["avg_wind_comp"].InnerText);
+                VoiceAttackPlugin.LogOutput("AvgWindComp", "grey");
+            }
+            catch (Exception e)
+            {
+                VoiceAttackPlugin.LogMonitorOutput("AvgWindComp. " + e.Message, "red");
             }
 
             try

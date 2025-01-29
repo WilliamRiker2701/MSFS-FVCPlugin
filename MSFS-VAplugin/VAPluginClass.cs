@@ -35,6 +35,7 @@ using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.ComponentModel;
+using System.Diagnostics.Metrics;
 
 namespace MSFS
 {
@@ -66,7 +67,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4.3";
+            return "MSFS-FVCplugin - v1.4.5";
         }
 
         /// <summary>
@@ -174,6 +175,7 @@ namespace MSFS
             string varKind = "K";
             string varAction = "Set";
             int outputVar = 0;
+            int aDigit = 0;
             
             double startValue;
             double curValue;
@@ -300,12 +302,14 @@ namespace MSFS
                     varAction = "Norm";
 
                 }
-                if (context.Substring(context.Length - 3) == "-A2")
+                if (System.Text.RegularExpressions.Regex.IsMatch(context, @"-A\d$"))
                 {
                     outputVar = 2;
                     varAction = "Norm";
+                    aDigit = context[context.Length - 1] - '0';
 
                 }
+
                 else
                 {
 
@@ -365,6 +369,20 @@ namespace MSFS
 
             }
 
+            else if (context == "CCTARGET")
+            {
+
+                varKind = "CCTARGET";
+
+            }
+
+            else if (context == "A310TRANS")
+            {
+
+                varKind = "A310TRANS";
+
+            }
+
             else if (context == "Compact")
             {
 
@@ -418,6 +436,28 @@ namespace MSFS
             {
 
                 varKind = "PMDG write serial";
+
+            }
+
+            else if (context == "OPACITY")
+            {
+
+                varKind = "OPACITY";
+
+            }
+
+            else if (context == "CLEARLOG")
+            {
+
+                varKind = "CLEARLOG";
+
+            }
+
+            else if (context.StartsWith("CALCULATOR"))
+            {
+
+                varKind = "Calculator";
+                
 
             }
 
@@ -1078,6 +1118,7 @@ namespace MSFS
                                     context = context.Remove(context.Length - 4);
                                     Utils.simVarSubscription = true;
                                     break;
+
                             }
 
                             if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Processing SimVar: " + context, LOG_INFO);
@@ -1109,8 +1150,9 @@ namespace MSFS
                                         break;
 
                                     case 2:
-                                        vaProxy.SetText(VARIABLE_NAMESPACE + ".Aux2ValueGetSt", simvarValinSt);
+                                        vaProxy.SetText(VARIABLE_NAMESPACE + ".Aux" + aDigit + "ValueGetSt", simvarValinSt);
                                         break;
+
                                 }
 
                                 if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "SimVar with separations: " + simvarValinSt, LOG_NORMAL);
@@ -1131,9 +1173,10 @@ namespace MSFS
                                     break;
 
                                 case 2:
-                                    vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".Aux2ValueGet", (decimal?)(double?)simvarVal);
-                                    vaProxy.SetText(VARIABLE_NAMESPACE + ".Aux2StringGet", simvarString);
+                                    vaProxy.SetDecimal(VARIABLE_NAMESPACE + ".Aux" + aDigit + "ValueGet", (decimal?)(double?)simvarVal);
+                                    vaProxy.SetText(VARIABLE_NAMESPACE + ".Aux" + aDigit + "StringGet", simvarString);
                                     break;
+
                             }
 
 
@@ -1346,6 +1389,169 @@ namespace MSFS
 
                     break;
 
+                case "CCTARGET":
+
+
+                    MSFS.Utils.errvar = context;
+
+
+                    msfsCommander = ConnectToWASM2(vaProxy);
+
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM2(vaProxy);
+
+                    }
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Method invoked CCTARGET", LOG_INFO);
+
+                    string upCode;
+                    string downCode;
+                    double modelModValue;
+
+                    string modelVariable = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCMODEL");
+                    string targetVariable = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCTARGET");
+                    string methodType = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCTYPE");
+                    string modelModification = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCMODELMOD");
+                    
+                    int threadSleep = vaProxy.GetInt(VARIABLE_NAMESPACE + ".CCTHREADSLEEP");
+
+                    double modelValue = msfsCommander.TriggerCalcCode(modelVariable);
+                    double targetValue = msfsCommander.TriggerCalcCode(targetVariable);
+
+                    
+
+                    if (modelModification != "NO")
+                    {                        
+                        switch (modelModification)
+                        {
+                            case "DIV":
+
+                                modelModValue = Convert.ToDouble(vaProxy.GetText(VARIABLE_NAMESPACE + ".CCMODELMODVALUE"));
+
+                                modelValue = modelValue / modelModValue;
+
+                            break;
+
+                            case "MULT":
+
+                                modelModValue = Convert.ToDouble(vaProxy.GetText(VARIABLE_NAMESPACE + ".CCMODELMODVALUE"));
+
+                                modelValue = modelValue * modelModValue;
+
+                            break;
+                        }
+                    }
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Model: " + modelValue + " and target value: " + targetValue, LOG_INFO);
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Method type: " + methodType + " and model modification type: " + modelModification, LOG_INFO);
+
+
+                    switch (methodType)
+                    {
+                        case "UPDOWN":
+
+                            upCode = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCUPCODE");
+                            downCode = vaProxy.GetText(VARIABLE_NAMESPACE + ".CCDOWNCODE");
+
+                            while (targetValue < modelValue)
+                            {
+                                msfsCommander.TriggerCalcCode(upCode);
+                                Thread.Sleep(threadSleep);
+                                targetValue = msfsCommander.TriggerCalcCode(targetVariable);
+
+                            }
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Target value after upCode: " + targetValue, LOG_INFO);
+
+                            while (targetValue > modelValue)
+                            {
+                                msfsCommander.TriggerCalcCode(downCode);
+                                Thread.Sleep(threadSleep);
+                                targetValue = msfsCommander.TriggerCalcCode(targetVariable);
+
+                            }
+
+                            if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Target value after upCode and downCode: " + targetValue, LOG_INFO);
+
+                            break;
+
+                    }
+                    
+                    msfsCommander.WASMDisconnect();
+
+                    Thread.Sleep(100);
+
+                    break;
+
+                case "A310TRANS":
+
+
+                    MSFS.Utils.errvar = context;
+
+
+                    msfsCommander = ConnectToWASM2(vaProxy);
+
+                    while (MSFS.Utils.errcon == true)
+                    {
+
+                        if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Retrying connection", LOG_INFO);
+
+                        msfsCommander = ConnectToWASM2(vaProxy);
+
+                    }
+
+                    int xpndr1 = int.Parse(vaProxy.GetText(VARIABLE_NAMESPACE + ".XPNDR1"));
+                    int xpndr2 = int.Parse(vaProxy.GetText(VARIABLE_NAMESPACE + ".XPNDR2"));
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Transponder target value: " + xpndr1 + xpndr2, LOG_INFO);
+
+                    msfsCommander.TriggerCalcCode("(A:TRANSPONDER CODE:1, Number)");
+
+                    int xpndr3 = int.Parse(Utils.calcString.Substring(0, 2));
+                    int xpndr4 = int.Parse(Utils.calcString.Substring(2, 2));
+
+                    if (DebugMode(vaProxy)) vaProxy.WriteToLog(LOG_PREFIX + "Transponder current value: " + xpndr3 + xpndr4, LOG_INFO);
+
+                    while (xpndr3 < xpndr1)
+                    {
+                        msfsCommander.TriggerCalcCode("1 (>L:A310_TRANSPONDER_OUTER_KNOB_TURNED_CLOCKWISE)");
+                        Thread.Sleep(50);
+                        msfsCommander.TriggerCalcCode("(A:TRANSPONDER CODE:1, Number)");
+                        xpndr3 = int.Parse(Utils.calcString.Substring(0, 2));
+                    }
+                    while (xpndr3 > xpndr1)
+                    {
+                        msfsCommander.TriggerCalcCode("1 (>L:A310_TRANSPONDER_OUTER_KNOB_TURNED_ANTICLOCKWISE)");
+                        Thread.Sleep(50);
+                        msfsCommander.TriggerCalcCode("(A:TRANSPONDER CODE:1, Number)");
+                        xpndr3 = int.Parse(Utils.calcString.Substring(0, 2));
+                    }
+
+                    while (xpndr4 < xpndr2)
+                    {
+                        msfsCommander.TriggerCalcCode("1 (>L:A310_TRANSPONDER_INNER_KNOB_TURNED_CLOCKWISE)");
+                        Thread.Sleep(50);
+                        msfsCommander.TriggerCalcCode("(A:TRANSPONDER CODE:1, Number)");
+                        xpndr4 = int.Parse(Utils.calcString.Substring(2, 2));
+                    }
+                    while (xpndr4 > xpndr2)
+                    {
+                        msfsCommander.TriggerCalcCode("1 (>L:A310_TRANSPONDER_INNER_KNOB_TURNED_ANTICLOCKWISE)");
+                        Thread.Sleep(50);
+                        msfsCommander.TriggerCalcCode("(A:TRANSPONDER CODE:1, Number)");
+                        xpndr4 = int.Parse(Utils.calcString.Substring(2, 2));
+                    }
+
+                    msfsCommander.WASMDisconnect();
+
+                    Thread.Sleep(100);
+
+                    break;
+
                 case "Compact":
 
                     if (vaProxy.GetBoolean("SetCompact") == true)
@@ -1534,6 +1740,27 @@ namespace MSFS
                     }
 
                     break;
+
+                case "Calculator":
+
+                    Utils.Calculator(context.Substring(11));
+
+                    break;
+
+                case "OPACITY":
+
+                    int opacity = vaProxy.GetInt("VAopacity");
+
+                    vaProxy.SetOpacity(opacity);
+
+                    break;
+
+                case "CLEARLOG":
+
+                    vaProxy.ClearLog();
+
+                    break;
+
 
 
             }
@@ -1859,6 +2086,14 @@ namespace MSFS
             VA.SetInt(vaVar, cVar);
 
         }
+
+        public static void SetDecimal(string vaVar, decimal cVar)
+        {
+
+            VA.SetDecimal(vaVar, cVar);
+
+        }
+
         public static string GetText(string vaVar)
         {
 
@@ -1866,10 +2101,10 @@ namespace MSFS
 
         }
 
-        public static void GetInt(string vaVar)
+        public static int GetInt(string vaVar)
         {
 
-            VA.GetInt(vaVar);
+            return VA.GetInt(vaVar);
 
         }
 

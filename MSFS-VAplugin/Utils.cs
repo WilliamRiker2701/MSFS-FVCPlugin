@@ -5,6 +5,7 @@
 //================================================================================================================= 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.FlightSimulator.SimConnect;
 using static MSFS.VoiceAttackPlugin;
@@ -88,6 +89,8 @@ namespace MSFS
         public static int sbCostIndex = 0;
 
         public static int sbInitialAlt = 0;
+
+        public static int sbAvgWindComp = 0;
 
         public static int sbAvgWindDir = 0;
 
@@ -331,6 +334,42 @@ namespace MSFS
         public static string webSocketColor;
 
 
+        public static void Calculator(string type)
+        {
+            //VoiceAttackPlugin.ForceLogOutput(type, "grey");
+
+            if (type == "sin")
+            {
+                string value = VoiceAttackPlugin.GetText("MSFS.ValueSet");
+
+                value = value.Replace(',', '.');
+
+                double nValue = double.Parse(value);
+
+                //VoiceAttackPlugin.ForceLogOutput(nValue.ToString(), "grey");
+
+                double radians = nValue * (Math.PI / 180);
+
+                //VoiceAttackPlugin.ForceLogOutput(radians.ToString(), "grey");
+
+                double sineValue = Math.Sin(radians);
+
+                //VoiceAttackPlugin.ForceLogOutput(sineValue.ToString(), "grey");
+
+                decimal sineValueDecimal = (decimal)sineValue;
+
+                //VoiceAttackPlugin.ForceLogOutput(sineValueDecimal.ToString(), "grey");
+
+                VoiceAttackPlugin.SetDecimal("MSFS.ValueGet", sineValueDecimal);
+            }
+
+        }
+
+        public static uint DecimalToScaledUInt(Decimal frequency)
+        {
+            return Decimal.ToUInt32(Math.Round(frequency * 1000)); // Scale by 1000 and round
+        }
+
         public static void SetCallsign()
         {
             sbCallsign = ConvertToRadiophonic(sbFlight);
@@ -354,7 +393,23 @@ namespace MSFS
 
             return converted.Trim(); // Remove trailing space
         }
-        
+
+
+        public static uint DecimalToBCD16(uint num)
+        {
+            uint result = 0;
+            uint shift = 0;
+
+            while (num > 0)
+            {
+                uint digit = num % 10; // Extract the last decimal digit
+                result |= (digit << (int)shift); // Encode the digit in BCD
+                shift += 4; // Move to the next 4-bit slot
+                num /= 10; // Remove the last digit
+            }
+
+            return result;
+        }
 
         public static void SetKeyName(string KeyName)
         {
@@ -373,22 +428,31 @@ namespace MSFS
         public static uint Bcd2Dec(uint num) 
         { 
             return HornerScheme(num, 0x10, 10); 
-        } 
-        
-        public static uint Dec2Bcd(uint num) { 
-            return HornerScheme(num, 10, 0x10); 
-        } 
-        
-        static private uint HornerScheme(uint Num, uint Divider, uint Factor) 
-        { 
-            uint Remainder = 0, Quotient = 0, Result = 0; 
-            Remainder = Num % Divider; 
-            Quotient = Num / Divider; 
-            
-            if (!(Quotient == 0 && Remainder == 0)) 
-                Result += HornerScheme(Quotient, Divider, Factor) * Factor + Remainder; 
-            
-            return Result; 
+        }
+
+        public static uint Dec2Bcd(uint num)
+        {
+            return HornerScheme(num, 10, 0x10);
+        }
+
+        private static uint HornerScheme(uint Num, uint Divider, uint Factor)
+        {
+            VoiceAttackPlugin.LogOutput("Horner scheme: " + Num + " Divider: " + Divider + " Factor: " + Factor, "grey");
+            uint Remainder = 0, Quotient = 0, Result = 0;
+            Remainder = Num % Divider; // Extract last digit
+
+            VoiceAttackPlugin.LogOutput("Horner scheme remainder: " + Remainder, "grey");
+
+            Quotient = Num / Divider; // Remove last digit
+
+            VoiceAttackPlugin.LogOutput("Horner scheme quotient: " + Quotient, "grey");
+
+            if (!(Quotient == 0 && Remainder == 0)) // Recurse if there's more digits
+                Result += HornerScheme(Quotient, Divider, Factor) * Factor + Remainder;
+
+            VoiceAttackPlugin.LogOutput("Horner scheme result: " + Result, "grey");
+
+            return Result;
         }
 
         static Dictionary<char, string> phoneticAlphabet = new Dictionary<char, string>

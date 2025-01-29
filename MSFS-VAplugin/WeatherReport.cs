@@ -24,6 +24,7 @@ namespace MSFS
         bool intVisExists;
         bool windVariableRange;
         bool windHasGust;
+        bool voiceAttackVariablesSave = false;
 
         string reportPrefix = "";
         string reportSufix = "";
@@ -131,6 +132,7 @@ namespace MSFS
 
             rvrIndex = -1;
             snowtamIndex = -1;
+            voiceAttackVariablesSave = true;
 
             int becmgIndex = metarRep.IndexOf("BECMG");
             int tempoIndex = metarRep.IndexOf("TEMPO");
@@ -351,6 +353,8 @@ namespace MSFS
                     VoiceAttackPlugin.LogOutput("Message " + i + ": " + scParts[i], "grey");
                 }
             }
+
+            voiceAttackVariablesSave = false;
 
         }
 
@@ -1131,16 +1135,22 @@ namespace MSFS
                     }
                 }
                 VoiceAttackPlugin.SetText(reportPrefix + ".Wind" + reportSufix, windMessage);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindDir" + reportSufix, -1);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindSpd" + reportSufix, -1);
             }
             else if (windType == "Calm")
             {
                 windMessage = windType;
                 VoiceAttackPlugin.SetText(reportPrefix + ".Wind" + reportSufix, windMessage);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindDir" + reportSufix, 0);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindSpd" + reportSufix, 0);
             }
             else if (windType == "None")
             {
                 windMessage = "No wind measurement recorded";
                 VoiceAttackPlugin.SetText(reportPrefix + ".Wind" + reportSufix, windMessage);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindDir" + reportSufix, -1);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindSpd" + reportSufix, -1);
             }
             else if (windType == "Regular")
             {
@@ -1167,6 +1177,8 @@ namespace MSFS
                     }
                 }
                 VoiceAttackPlugin.SetText(reportPrefix + ".Wind" + reportSufix, windMessage);
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindDir" + reportSufix, int.Parse(windDirection));
+                VoiceAttackPlugin.SetInt(reportPrefix + ".WindSpd" + reportSufix, int.Parse(windSpeed));
             }            
         }
 
@@ -1279,7 +1291,10 @@ namespace MSFS
                 if (temperature.StartsWith("0"))
                     temperature = temperature.Substring(1, 1);
 
-                VoiceAttackPlugin.SetText(reportPrefix + ".Temperature" + reportSufix, temperature + "ºC");
+                decimal decTemperature = decimal.Parse(temperature);
+
+                VoiceAttackPlugin.SetDecimal(reportPrefix + ".DecTemperature" + reportSufix, decTemperature);
+                VoiceAttackPlugin.SetText(reportPrefix + ".Temperature" + reportSufix, temperature + "ºC");              
                 VoiceAttackPlugin.SetText(reportPrefix + ".DewPoint" + reportSufix, dewPoint + "ºC");
             }
         }
@@ -1871,6 +1886,10 @@ namespace MSFS
                 {
                     intensity = "Heavy"; // Heavy intensity
                     weatherPhenomenaType = component.Substring(1); // Remove the first character
+                    if (voiceAttackVariablesSave == true)
+                    {
+                        VoiceAttackPlugin.SetText("heavyPrecipitation", "true");
+                    }
                 }
 
                 VoiceAttackPlugin.LogOutput("Report WP component intensity: " + intensity, "grey");                                
@@ -1906,7 +1925,11 @@ namespace MSFS
                         case "DZ":
                             descriptor = "Drizzle";
                             preDescriptor = -1;
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "BL":
                             descriptor = "Blowing";
@@ -1914,9 +1937,18 @@ namespace MSFS
                         case "SH":
                             descriptor = "Showers";
                             preDescriptor = 0;
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "TS":
                             descriptor = "Thunderstorm with";
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                                VoiceAttackPlugin.SetText("heavyPrecipitation", "true");
+                            }
                             break;
                         case "FZ":
                             descriptor = "Freezing";
@@ -1931,7 +1963,12 @@ namespace MSFS
                         case "RA":
                             descriptor = "Rain";
                             preDescriptor = -1;
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
+                            
                             break;
                         case "RE":
                             descriptor = "Recent";
@@ -1939,7 +1976,11 @@ namespace MSFS
                         case "SN":
                             descriptor = "Snow";
                             preDescriptor = -1;
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                     }
                 }
@@ -1949,6 +1990,10 @@ namespace MSFS
                 {
                     case "BR":
                         weatherPhenomenaType = "Mist";
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "DS":
                         weatherPhenomenaType = "Dust Storm";
@@ -1958,35 +2003,60 @@ namespace MSFS
                         break;
                     case "DZ":
                         weatherPhenomenaType = "Drizzle";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                        }
                         break;
                     case "FG":
                         weatherPhenomenaType = "Fog";
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "FC":
                         weatherPhenomenaType = "Funnel Cloud";
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "FU":
                         weatherPhenomenaType = "Smoke";
                         break;
                     case "GR":
                         weatherPhenomenaType = "Hail";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                        }
                         break;
                     case "GS":
                         weatherPhenomenaType = "Small Hail";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                        }
                         break;
                     case "HZ":
                         weatherPhenomenaType = "Haze";
                         break;
                     case "IC":
                         weatherPhenomenaType = "Ice Crystals";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "PL":
                         weatherPhenomenaType = "Ice Pellets";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "PO":
                         weatherPhenomenaType = "Dust/Sand Whirls";
@@ -1996,21 +2066,37 @@ namespace MSFS
                         break;
                     case "RA":
                         weatherPhenomenaType = "Rain";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "SA":
                         weatherPhenomenaType = "Sand";
                         break;
                     case "SG":
                         weatherPhenomenaType = "Snow Grains";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "SH":
                         weatherPhenomenaType = "Showers";
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "SN":
                         weatherPhenomenaType = "Snow";
-                        VoiceAttackPlugin.SetText("runwayState", "WET");
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                        }
                         break;
                     case "SQ":
                         weatherPhenomenaType = "Squalls";
@@ -2035,6 +2121,10 @@ namespace MSFS
                     {
                         case "BR":
                             wp2 = "Mist";
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "DS":
                             wp2 = "Dust Storm";
@@ -2044,35 +2134,63 @@ namespace MSFS
                             break;
                         case "DZ":
                             wp2 = "Drizzle";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "FG":
                             wp2 = "Fog";
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "FC":
                             wp2 = "Funnel Cloud";
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "FU":
                             wp2 = "Smoke";
                             break;
                         case "GR":
                             wp2 = "Hail";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "GS":
                             wp2 = "Small Hail";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "HZ":
                             wp2 = "Haze";
                             break;
                         case "IC":
                             wp2 = "Ice Crystals";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "PL":
                             wp2 = "Ice Pellets";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "PO":
                             wp2 = "Dust/Sand Whirls";
@@ -2082,21 +2200,37 @@ namespace MSFS
                             break;
                         case "RA":
                             wp2 = "Rain";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "SA":
                             wp2 = "Sand";
                             break;
                         case "SG":
                             wp2 = "Snow Grains";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "SH":
                             wp2 = "Showers";
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "SN":
                             wp2 = "Snow";
-                            VoiceAttackPlugin.SetText("runwayState", "WET");
+                            if (voiceAttackVariablesSave == true)
+                            {
+                                VoiceAttackPlugin.SetText("runwayState", "WET");
+                                VoiceAttackPlugin.SetText("visibleMoisture", "true");
+                            }
                             break;
                         case "SQ":
                             wp2 = "Squalls";
@@ -2247,10 +2381,19 @@ namespace MSFS
                     else 
                     {
                         if (cloudHeight.StartsWith("0"))
-                            cloudHeight = cloudHeight.Substring(1, 2);
+                            cloudHeight = cloudHeight.Substring(1);
                         if (cloudHeight.StartsWith("0"))
-                            cloudHeight = cloudHeight.Substring(1, 1);
+                            cloudHeight = cloudHeight.Substring(1);
                         cloudHeight = cloudHeight + "00 feet AGL";
+                        if (voiceAttackVariablesSave == true)
+                        {
+                            int intCloudHeight = int.Parse(cloudHeight.Substring(0, cloudHeight.Length - 9));
+                            int intCloudHeightlatest = VoiceAttackPlugin.GetInt("lowestClouds");
+                            if (intCloudHeight < intCloudHeightlatest)
+                            {
+                                VoiceAttackPlugin.SetInt("lowestClouds", intCloudHeight);
+                            }
+                        }
                     }                                    
                 }
 

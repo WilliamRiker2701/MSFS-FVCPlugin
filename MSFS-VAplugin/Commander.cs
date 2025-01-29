@@ -1076,14 +1076,27 @@ namespace MSFS
             if (varName == "ADF_COMPLETE_SET" | varName == "ADF2_COMPLETE_SET" | varName == "COM_RADIO_SET" | varName == "COM2_RADIO_SET" | varName == "COM_STBY_RADIO_SET" | varName == "COM2_STBY_RADIO_SET" | varName == "NAV1_RADIO_SET" | varName == "NAV2_RADIO_SET" | varName == "NAV1_STBY_SET" | varName == "NAV2_STBY_SET")
             {
                 Decimal d;
+                if (Decimal.TryParse(varData, out d))
+                {
+                    // Scale frequency by 1000 to get rid of decimal places
+                    uint scaledFrequency = (uint)Math.Round(d * 1000);
 
-                UInt32 varDataBCD;
+                    // Convert the scaled frequency into BCD16
+                    uint bcdFrequency = Utils.DecimalToBCD16(scaledFrequency);
 
-                Decimal.TryParse(varData, out d);
+                    // Log outputs for debugging
+                    VoiceAttackPlugin.LogOutput($"Original Frequency: {d} MHz", "grey");
+                    VoiceAttackPlugin.LogOutput($"Scaled Frequency: {scaledFrequency}", "grey");
+                    VoiceAttackPlugin.LogOutput($"BCD16 Frequency: 0x{bcdFrequency:X}", "grey");
 
-                varDataBCD = Utils.Dec2Bcd(Decimal.ToUInt32(d * 100));
+                    // Convert BCD16 value back to string for MSFS
+                    varData = bcdFrequency.ToString();
 
-                varData = varDataBCD.ToString();
+                }
+                else
+                {
+                    VoiceAttackPlugin.LogOutput("Invalid frequency input.", "red");
+                }
 
             }
 
@@ -3429,6 +3442,9 @@ namespace MSFS
 
             TriggerCalcCode(Utils.sbInitialAlt + " (>L:SimBrief_InitialAlt)");
             VoiceAttackPlugin.LogMonitorOutput("InitialAlt: " + Utils.sbInitialAlt, "blue");
+
+            TriggerCalcCode(Utils.sbAvgWindComp + " (>L:SimBrief_AvgWindComp)");
+            VoiceAttackPlugin.LogMonitorOutput("AvgWindComp: " + Utils.sbAvgWindComp, "blue");
 
             TriggerCalcCode(Utils.sbAvgWindDir + " (>L:SimBrief_AvgWindDir)");
             VoiceAttackPlugin.LogMonitorOutput("AvgWindDir: " + Utils.sbAvgWindDir, "blue");

@@ -367,6 +367,7 @@ namespace MSFS
         PLANE_LATITUDE = 12,
         PLANE_LONGITUDE = 12,
         PROP_DEICE_SWITCH = 0,
+        PROP_RPM = 11,
         PUSHBACK_STATE = 9,
         SEA_LEVEL_PRESSURE = 18,
         SIM_ON_GROUND = 0,
