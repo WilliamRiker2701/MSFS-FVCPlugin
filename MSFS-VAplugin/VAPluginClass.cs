@@ -36,6 +36,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.ComponentModel;
 using System.Diagnostics.Metrics;
+using System.Xml;
 
 namespace MSFS
 {
@@ -48,8 +49,11 @@ namespace MSFS
         const string LOG_INFO = "grey";
         private static dynamic VA;
         private static WebSocketServer webSocketServer;
+        
         public string reqType = "NULL";
         private static IWebSocketConnection webSocketClient;
+        
+
 
 
 
@@ -67,7 +71,7 @@ namespace MSFS
         /// </summary>
         public static string VA_DisplayName()
         {
-            return "MSFS-FVCplugin - v1.4.5.1";
+            return "MSFS-FVCplugin - v1.4.5.1-b";
         }
 
         /// <summary>
@@ -118,6 +122,7 @@ namespace MSFS
             VA.LogEntryAdded += new Action<DateTime, String, String>(SaveLogEntry);
 
             webSocketServer = new WebSocketServer("ws://127.0.0.1:54325");
+            
 
             // Start the server
 
@@ -128,6 +133,7 @@ namespace MSFS
                 {
                     VA.WriteToLog(LOG_PREFIX + "Connection with FVC Panel opened", "orange");
                     webSocketClient = socket;
+                    
                 };
 
                 socket.OnClose = () =>
@@ -137,10 +143,13 @@ namespace MSFS
                     {
                         webSocketClient = null;
                     }
+
                 };
 
-
             });
+
+
+
 
 
             if (DebugMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket message: " + Utils.webSocketColor + " " + Utils.webSocketMessage, LOG_NORMAL);
@@ -2165,12 +2174,14 @@ namespace MSFS
             {
                 // Stop the WebSocket server
                 webSocketServer?.Dispose();
-                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket server stopped", LOG_NORMAL);
+                
+                if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "WebSocket panel server stopped", LOG_NORMAL);
             }
             catch (Exception ex)
             {
                 if (MonitoringMode(VA)) VA.WriteToLog(LOG_PREFIX + "Error stopping WebSocket server: " + ex, LOG_ERROR);
             }
+
         }
 
 
@@ -2216,6 +2227,8 @@ namespace MSFS
                 return null;
             }
         }
+
+
 
     }
 }

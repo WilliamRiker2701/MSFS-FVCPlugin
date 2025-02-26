@@ -1313,32 +1313,38 @@ namespace MSFS
 
                 if (altimeterUnit == "A")
                 {
-                    int altimeterValInt = int.Parse(altimeterValue);
+                    VoiceAttackPlugin.SetInt(reportPrefix + ".Altimeter" + reportSufix, int.Parse(altimeterValue));
+                    VoiceAttackPlugin.LogOutput("QNH component INHG integer: " + int.Parse(altimeterValue), "grey");
                     string altimeterINHG = altimeterValue.Substring(0, 2) + "." + altimeterValue.Substring(2, 2);
-                    double altValue = double.Parse(altimeterValue);
-                    altValue = altValue * 33.8639 / 100;
-                    string altimeterHPA = altValue.ToString("F0");
-                    VoiceAttackPlugin.LogOutput("QNH component formatted INHG: " + altimeterINHG, "grey");
-                    VoiceAttackPlugin.LogOutput("QNH component formatted HPA: " + altimeterHPA, "grey");
+                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterA" + reportSufix, altimeterINHG + " inHg");
+                    VoiceAttackPlugin.LogOutput("QNH component INHG string: " + altimeterINHG, "grey");
 
-                    VoiceAttackPlugin.SetInt(reportPrefix + ".Altimeter" + reportSufix, altimeterValInt);
-                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterA" + reportSufix, altimeterINHG + "inHg");
-                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterQ" + reportSufix, altimeterHPA + "hPa");                    
+                    decimal altimeterValDecimal = decimal.Parse(altimeterValue);                    
+                    decimal altValue = altimeterValDecimal * 33.8639m / 100;
+                    string altimeterHPA = Math.Round(altValue, 0).ToString();
+                    VoiceAttackPlugin.SetInt(reportPrefix + ".AltimeterQint" + reportSufix, int.Parse(altimeterHPA));
+                    VoiceAttackPlugin.LogOutput("QNH component HPA integer: " + int.Parse(altimeterHPA), "grey");
+                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterQ" + reportSufix, altimeterHPA + " hPa");
+                    VoiceAttackPlugin.LogOutput("QNH component HPA string: " + altimeterHPA, "grey");
+
                 }
                 if (altimeterUnit == "Q")
                 {
-                    string altimeterHPA = altimeterValue;
-                    double altValue = double.Parse(altimeterValue);
-                    altValue = altValue * 0.02953;
-                    double altValue2 = altValue * 100;
-                    int altimeterValInt = (int)altValue2;
-                    string altimeterINHG = altValue.ToString("F2");
-                    VoiceAttackPlugin.LogOutput("QNH component formatted INHG: " + altimeterINHG, "grey");
-                    VoiceAttackPlugin.LogOutput("QNH component formatted HPA: " + altimeterHPA, "grey");
+                    VoiceAttackPlugin.SetInt(reportPrefix + ".AltimeterQint" + reportSufix, int.Parse(altimeterValue));
+                    VoiceAttackPlugin.LogOutput("QNH component HPA integer: " + int.Parse(altimeterValue), "grey");
+                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterQ" + reportSufix, altimeterValue + " hPa");
+                    VoiceAttackPlugin.LogOutput("QNH component HPA string: " + altimeterValue, "grey");
 
-                    VoiceAttackPlugin.SetInt(reportPrefix + ".Altimeter" + reportSufix, altimeterValInt);
-                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterA" + reportSufix, altimeterINHG + "inHg");
-                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterQ" + reportSufix, altimeterHPA + "hPa");                                        
+                    decimal altimeterValDecimal = decimal.Parse(altimeterValue);
+                    decimal altValue = altimeterValDecimal * 0.02953m * 100;
+                    VoiceAttackPlugin.SetInt(reportPrefix + ".Altimeter" + reportSufix, (int)Math.Round(altValue));
+                    VoiceAttackPlugin.LogOutput("QNH component INHG integer: " + (int)Math.Round(altValue), "grey");
+
+                    altValue = altValue / 100;
+                    string altimeterINHG = Math.Round(altValue, 2).ToString("F2");
+                    VoiceAttackPlugin.SetText(reportPrefix + ".AltimeterA" + reportSufix, altimeterINHG + " inHg");
+                    VoiceAttackPlugin.LogOutput("QNH component INHG string: " + altimeterINHG, "grey");
+
                 }               
             }
         }
